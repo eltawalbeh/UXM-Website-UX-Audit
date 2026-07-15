@@ -36,11 +36,12 @@ class FreshCloneBootstrapTests(unittest.TestCase):
 
             self.assertTrue(database.is_file())
             self.assertEqual(imported, {
+                "pilot_ammancity_eservices_20260715": 2,
                 "pilot_jordan_gov_onyourservice_20260714": 5,
                 "pilot_tawasal_bekhedmetcom_20260714": 4,
             })
             with closing(sqlite3.connect(database)) as connection:
-                self.assertEqual(connection.execute("SELECT COUNT(*) FROM audits").fetchone()[0], 2)
+                self.assertEqual(connection.execute("SELECT COUNT(*) FROM audits").fetchone()[0], 3)
             self.assertTrue((evidence / "annotated" / "jordan-gov-onyourservice" / "UXM-001.png").is_file())
             self.assertTrue((evidence / "raw" / "tawasal" / "sendotp.png").is_file())
 
@@ -58,7 +59,7 @@ class FreshCloneBootstrapTests(unittest.TestCase):
             self.assertEqual(second, first)
             self.assertTrue((evidence / "raw" / "tawasal" / "sendotp.png").is_file())
             with closing(sqlite3.connect(database)) as connection:
-                self.assertEqual(connection.execute("SELECT COUNT(*) FROM audits").fetchone()[0], 2)
+                self.assertEqual(connection.execute("SELECT COUNT(*) FROM audits").fetchone()[0], 3)
 
 
 if __name__ == "__main__":

@@ -33,9 +33,12 @@ class PilotMigrationTests(unittest.TestCase):
             imported = migration.import_pilots(AUDIT_ROOT / "pilots", repository, AUDIT_ROOT)
 
             self.assertEqual(imported, {
+                "pilot_ammancity_eservices_20260715": 2,
                 "pilot_jordan_gov_onyourservice_20260714": 5,
                 "pilot_tawasal_bekhedmetcom_20260714": 4,
             })
+            amman = repository.get_audit("pilot_ammancity_eservices_20260715")
+            self.assertEqual(amman["findings"][0]["arabic"]["title"], "مرشح القطاع يرسل إشارات متناقضة حول إلزامية الإدخال")
             for audit_id, expected_findings in imported.items():
                 audit = repository.get_audit(audit_id)
                 self.assertEqual(len(audit["findings"]), expected_findings)
@@ -73,7 +76,7 @@ class PilotMigrationTests(unittest.TestCase):
                 self.assertIsInstance(evidence["sourceImage"], dict)
                 self.assertIsInstance(evidence["annotatedImage"], dict)
 
-        self.assertEqual(supported, 9)
+        self.assertEqual(supported, 11)
         self.assertEqual(excluded, {
             ("pilot_tawasal_bekhedmetcom_20260714", "UXM-003"),
             ("pilot_tawasal_bekhedmetcom_20260714", "UXM-006"),

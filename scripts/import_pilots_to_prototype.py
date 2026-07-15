@@ -89,7 +89,9 @@ def normalize_audit(audit: dict) -> dict:
             continue
         legacy = finding["evidence"]
         finding["url"] = finding.get("url") or legacy["url"]
-        finding["arabic"] = translations[finding["id"]]
+        # New evidence-led pilots own their reviewed translations in the fixture;
+        # legacy fixtures receive the maintained migration translation mapping.
+        finding["arabic"] = finding.get("arabic") or translations[finding["id"]]
         finding["evidence"] = {
             "sourceImage": image_record(legacy["sourceImage"]),
             "annotatedImage": image_record(legacy["annotatedImage"]),

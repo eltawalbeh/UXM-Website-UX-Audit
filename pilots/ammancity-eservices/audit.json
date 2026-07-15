@@ -1,0 +1,155 @@
+{
+  "id": "pilot_ammancity_eservices_20260715",
+  "client": "Greater Amman Municipality / E-Services Portal",
+  "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx",
+  "status": "pilot_in_review",
+  "locale": "ar",
+  "scope": {
+    "included": [
+      "Public Arabic e-services catalog at desktop viewport",
+      "Visible search/filter controls and visible service cards",
+      "Visible non-transactional notification overlay"
+    ],
+    "excluded": [
+      "Entering any search terms or personal data",
+      "Login, registration, payment, request submission, and service-card actions",
+      "Authenticated, OTP, and back-office workflows",
+      "Narrow mobile viewport",
+      "Keyboard-only, screen-reader, automated accessibility, and performance testing"
+    ],
+    "devices": [
+      "Desktop public browser, 1440 × 1200 capture"
+    ],
+    "auditDate": "2026-07-15",
+    "limitation": "Findings are limited to the single public Arabic catalog state captured without interacting with form controls or service links."
+  },
+  "assessmentSummary": {
+    "score": 50,
+    "scoredCheckpoints": 6,
+    "notVerified": 3,
+    "method": "Pass = 1, Partial = 0.5, Issue = 0; Not verified excluded. (2 pass + 2 partial + 2 issue) / 6 = 50%."
+  },
+  "assessments": [
+    {
+      "id": "NAV-01",
+      "status": "pass",
+      "note": "The public portal exposes a persistent top navigation and a visible breadcrumb on the captured catalog page."
+    },
+    {
+      "id": "HP-24",
+      "status": "pass",
+      "note": "The page exposes a visible service-name field, sector selector, and Search action before the service catalog."
+    },
+    {
+      "id": "FORM-15",
+      "status": "issue",
+      "note": "The sector label visibly combines a red asterisk conventionally used for required fields with the word اختياري (optional)."
+    },
+    {
+      "id": "CONTENT-24",
+      "status": "partial",
+      "note": "The page title and search controls state the catalog purpose, but the notification overlay competes with visible service content."
+    },
+    {
+      "id": "VIS-11",
+      "status": "issue",
+      "note": "The fixed red notification panel covers part of the second-row service card in the captured desktop state."
+    },
+    {
+      "id": "HELP-14",
+      "status": "partial",
+      "note": "The overlay contains a close control, but it is a small X embedded in dense warning text and the overlay still obstructs catalog content."
+    },
+    {
+      "id": "A11Y-01",
+      "status": "not_verified",
+      "note": "No automated contrast measurement was run."
+    },
+    {
+      "id": "A11Y-02",
+      "status": "not_verified",
+      "note": "Keyboard-only operation was not tested."
+    },
+    {
+      "id": "MOB-01",
+      "status": "not_verified",
+      "note": "A real narrow-viewport mobile audit remains pending."
+    }
+  ],
+  "findings": [
+    {
+      "id": "UXM-001",
+      "severity": "medium",
+      "category": "forms_data_entry",
+      "page": "E-services portal / catalog filters",
+      "journey": "Find a service",
+      "title": "The sector filter sends contradictory requiredness signals",
+      "observed": "The visible sector label combines a red asterisk with the Arabic word “اختياري” (optional). The same control is displayed above the sector selector.",
+      "impact": "People cannot reliably tell whether they must choose a sector before searching, which can cause unnecessary effort or prevent confident use of the catalog filters.",
+      "recommendation": "Use one unambiguous state: remove the asterisk when the sector is optional, or label it as required and enforce that state consistently. Add helper text only if users need to understand the filter’s effect.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/ammancity/eservices-portal.png",
+          "path": "evidence/raw/ammancity/eservices-portal.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/ammancity-eservices/UXM-001.png",
+          "path": "evidence/annotated/ammancity-eservices/UXM-001.png"
+        },
+        "capturedAt": "2026-07-15T11:39:51Z",
+        "description": "Public Arabic catalog filter label visibly shows both a red asterisk and optional status for the sector selector.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {"left": 600, "top": 390, "right": 1100, "bottom": 515},
+          "focusBox": {"left": 205, "top": 18, "right": 392, "bottom": 48},
+          "marker": "1",
+          "color": "#B8141E"
+        }
+      },
+      "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx",
+      "arabic": {
+        "title": "مرشح القطاع يرسل إشارات متناقضة حول إلزامية الإدخال",
+        "observed": "يجمع عنوان حقل القطاع الظاهر بين علامة النجمة الحمراء وكلمة «اختياري»، ويظهر الحقل نفسه فوق قائمة اختيار القطاع.",
+        "impact": "لا يستطيع المستخدم تحديد ما إذا كان اختيار القطاع مطلوباً قبل البحث، مما قد يسبب جهداً غير ضروري أو يقلل الثقة في استخدام مرشحات الدليل.",
+        "recommendation": "استخدم حالة واحدة واضحة: أزل النجمة إذا كان القطاع اختيارياً، أو صِفه بأنه إلزامي وطبّق ذلك بصورة متسقة. أضف نصاً مساعداً فقط إذا احتاج المستخدم إلى فهم أثر المرشح."
+      }
+    },
+    {
+      "id": "UXM-002",
+      "severity": "medium",
+      "category": "usability",
+      "page": "E-services portal / service catalog",
+      "journey": "Browse services",
+      "title": "A fixed notification obscures a service card while users browse the catalog",
+      "observed": "A red notification panel remains over the lower-left portion of the captured catalog and covers the title/action area of a visible second-row service card.",
+      "impact": "A citizen browsing available services can lose access to part of the card’s content and actions until they notice and dismiss the overlay.",
+      "recommendation": "Do not position non-critical notices over catalog content. Place the notice in the normal page flow or reserve space for it; if it must be dismissible, use a clearly labelled close control and restore unobstructed access immediately.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/ammancity/eservices-portal.png",
+          "path": "evidence/raw/ammancity/eservices-portal.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/ammancity-eservices/UXM-002.png",
+          "path": "evidence/annotated/ammancity-eservices/UXM-002.png"
+        },
+        "capturedAt": "2026-07-15T11:39:51Z",
+        "description": "A fixed red notification visibly overlaps the second-row card content in the public Arabic service catalog.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {"left": 0, "top": 940, "right": 440, "bottom": 1200},
+          "focusBox": {"left": 10, "top": 86, "right": 315, "bottom": 250},
+          "marker": "1",
+          "color": "#B8141E"
+        }
+      },
+      "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx",
+      "arabic": {
+        "title": "إشعار ثابت يحجب بطاقة خدمة أثناء تصفح الدليل",
+        "observed": "تظل لوحة إشعار حمراء فوق الجزء السفلي الأيسر من الدليل الظاهر، وتحجب منطقة العنوان والإجراءات لبطاقة خدمة ظاهرة في الصف الثاني.",
+        "impact": "قد يفقد المواطن الذي يتصفح الخدمات جزءاً من محتوى البطاقة وإجراءاتها إلى أن يلاحظ التراكب ويغلقه.",
+        "recommendation": "لا تضع الإشعارات غير الحرجة فوق محتوى الدليل. اعرض الإشعار ضمن تدفق الصفحة أو احجز له مساحة؛ وإذا كان قابلاً للإغلاق، فاستخدم إجراء إغلاق واضح التسمية وأعد إتاحة المحتوى فوراً."
+      }
+    }
+  ]
+}
