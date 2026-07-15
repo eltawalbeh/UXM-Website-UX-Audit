@@ -15,6 +15,15 @@ A local, evidence-led UX audit workspace and report publisher backed by SQLite.
 9. The dedicated report is report-only (no workspace shell), uses A4 landscape print CSS, filters excluded findings, and renders persisted annotated evidence images.
 10. **Draft with AI** is a human-review workflow: it sends the active audit scope, selected checkpoint/category/journey, entered notes, evidence metadata, and existing finding IDs to a configured provider. It returns a reviewable observation, impact, recommendation, suggested severity, confidence, missing-evidence checks, and duplicate-risk check. It does not create a finding, save data, publish, or change scoring until the reviewer explicitly chooses **Apply reviewed draft**, and then **Save changes**.
 
+## AI preliminary first pass (optional)
+
+From **Findings**, enter a website URL and choose **Start AI first pass**. This is a separate, transient discovery aid that extends the existing finding-draft Copilot:
+
+- It performs bounded `GET` requests only (maximum five same-origin public HTML pages), rejects credentialed, localhost, and private-IP URLs, and does not submit forms, authenticate, enter personal data, transact, or visit login/account/transaction routes.
+- It shows the exact visited URLs, text captures/timestamps, and every skipped URL/reason. The current Step 1 capture is extracted public-page text and links rather than browser screenshots.
+- The configured NVIDIA/OpenAI-compatible endpoint and `UXM_AI_MODEL` are used to generate only evidence-linked candidate findings. No response is fabricated if fetching or AI generation fails.
+- Candidates exist only in browser memory. They never enter persisted findings, scores, readiness, reports, or exports. **Promote for review** merely loads an editable proposal into the existing human-reviewed draft flow; the auditor must validate/attach evidence, apply it, and then explicitly save.
+
 ## AI Audit Copilot setup (optional)
 
 The copilot intentionally has no built-in or simulated response. Without a live provider it shows **AI connection unavailable** and keeps all form notes in place.

@@ -12,6 +12,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from backend.audit_copilot import build_context, configured_drafter
+from backend.ai_first_pass import build_first_pass_context, configured_first_pass_drafter, explore_public_pages, finalize_scope, safe_public_url, scope_request
 from backend.storage import AuditRepository
 
 
@@ -36,7 +37,7 @@ def chrome_pdf_exporter(base_url: str):
     return export
 
 
-def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: int = 4173, pdf_exporter=None, ai_drafter=None):
+def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: int = 4173, pdf_exporter=None, ai_drafter=None, ai_first_pass_explorer=None, ai_first_pass_drafter=None):
     static_root = Path(static_root).resolve()
 
     class Handler(BaseHTTPRequestHandler):
@@ -76,6 +77,10 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             if draft_match:
                 self._draft_with_ai(draft_match.group(1))
                 return
+            first_pass_match = re.fullmatch(r"/api/audits/([^/]+)/ai-first-pass", path)
+            if first_pass_match:
+                self._first_pass_with_ai(first_pass_match.group(1))
+                return
             evidence_match = re.fullmatch(r"/api/audits/([^/]+)/findings/([^/]+)/evidence", path)
             if evidence_match:
                 self._upload_evidence(evidence_match.group(1), evidence_match.group(2))
@@ -111,6 +116,34 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             result = drafter(build_context(audit, request_data))
             # Drafting is deliberately read-only: no finding, evidence, assessment, or score is persisted here.
             self._json(200 if result.get("status") == "ready" else 503, result)
+
+        def _first_pass_with_ai(self, audit_id: str):
+            audit = repository.get_audit(audit_id)
+            if audit is None:
+                self._json(404, {"error": "Audit not found"})
+                return
+            try:
+                request_data = self._request_json()
+                if not isinstance(request_data, dict):
+                    raise ValueError("First-pass request must be a JSON object")
+                target_url = safe_public_url(request_data.get("url") or audit.get("url"))
+                requested_scope = scope_request(request_data, target_url)
+            except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+                self._json(400, {"error": str(error)})
+                return
+            explorer = ai_first_pass_explorer or explore_public_pages
+            exploration = explorer(target_url, requested_scope)
+            if exploration.get("status") != "ready":
+                self._json(503, exploration)
+                return
+            scope = finalize_scope(exploration.get("scope") or {}, requested_scope)
+            drafter = ai_first_pass_drafter or configured_first_pass_drafter
+            result = drafter(build_first_pass_context(audit, scope))
+            # Discovery is deliberately transient: never persist candidates, evidence, findings, scores, readiness, or report data.
+            if result.get("status") != "ready":
+                self._json(503, result)
+                return
+            self._json(200, {"status": "ready", "scope": scope, "candidates": result.get("candidates", [])})
 
         def _export_pdf(self, audit_id: str):
             locale = parse_qs(urlparse(self.path).query).get("locale", ["en"])[0]
@@ -183,7 +216,11 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
                 self.send_header("Content-Disposition", f'attachment; filename="{target.name}"')
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except (BrokenPipeError, ConnectionAbortedError):
+                # Browsers may cancel a static request during navigation; this must not crash a request thread.
+                return
 
         def log_message(self, format, *args):
             return
