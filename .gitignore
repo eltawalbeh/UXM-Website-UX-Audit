@@ -1,0 +1,19 @@
+# Local runtime and sensitive/generated state
+prototype/.venv/
+prototype/data/*.db
+prototype/data/backups/
+prototype/evidence/uploads/
+prototype/artifacts/
+
+# Local browser and Python caches
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+prototype/chrome-layout-profile/
+
+# Hermes-local and OS files
+.hermes/desktop-attachments/
+.notion_tmp_rename/
+*.log
+.DS_Store
+Thumbs.db

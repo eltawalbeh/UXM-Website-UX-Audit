@@ -1,0 +1,378 @@
+{
+  "id": "pilot_tawasal_bekhedmetcom_20260714",
+  "client": "Tawasal / BekhedmetCom",
+  "url": "https://www.tawasal.gov.jo/BekhedmetCom/BekhedmetComDashboard",
+  "status": "pilot_in_review",
+  "locale": "ar",
+  "scope": {
+    "included": [
+      "Public dashboard",
+      "SendOTP request-start page",
+      "English locale sample",
+      "Public 404 recovery page"
+    ],
+    "excluded": [
+      "Login",
+      "OTP delivery/verification",
+      "Authenticated submission",
+      "Complaint lifecycle",
+      "Mobile narrow-viewport test",
+      "Keyboard-only and automated assistive-technology test",
+      "Controlled performance testing"
+    ],
+    "devices": [
+      "Desktop public browser"
+    ],
+    "auditDate": "2026-07-14"
+  },
+  "assessmentSummary": {
+    "score": 57,
+    "scoredCheckpoints": 14,
+    "notVerified": 4,
+    "method": "Pass = 1, Partial = 0.5, Issue = 0; Not verified excluded."
+  },
+  "assessments": [
+    {
+      "id": "HP-18",
+      "status": "pass",
+      "note": "Public dashboard clearly explains the service purpose."
+    },
+    {
+      "id": "HP-23",
+      "status": "pass",
+      "note": "A first-time visitor can understand the platform value from the dashboard introduction."
+    },
+    {
+      "id": "HP-24",
+      "status": "pass",
+      "note": "The dashboard provides a visible start action: إضافة طلب جديد."
+    },
+    {
+      "id": "NAV-01",
+      "status": "pass",
+      "note": "Persistent header/footer navigation and a Home link are visible on public pages."
+    },
+    {
+      "id": "NAV-17",
+      "status": "pass",
+      "note": "A site map is available in the public footer."
+    },
+    {
+      "id": "FORM-13",
+      "status": "issue",
+      "note": "The phone-number input on SendOTP is visually empty and has no persistent field label or placeholder."
+    },
+    {
+      "id": "FORM-15",
+      "status": "partial",
+      "note": "The required-state message is visible, but it is separated below the unlabeled input rather than attached to the field label."
+    },
+    {
+      "id": "FORM-19",
+      "status": "partial",
+      "note": "A brief instruction exists, but it does not show phone format/example before entry."
+    },
+    {
+      "id": "PRIV-02",
+      "status": "issue",
+      "note": "The public phone-number request screen does not visibly provide contextual data-use/privacy information beside the collection action."
+    },
+    {
+      "id": "CONTENT-24",
+      "status": "partial",
+      "note": "The main purpose is stated, but the SendOTP page repeats a large hero before the task form."
+    },
+    {
+      "id": "CONTENT-25",
+      "status": "issue",
+      "note": "English public copy visibly includes inconsistent product capitalization and awkward phrasing."
+    },
+    {
+      "id": "VIS-11",
+      "status": "partial",
+      "note": "The oversized hero consumes substantial vertical attention before the phone-number task."
+    },
+    {
+      "id": "VIS-40",
+      "status": "partial",
+      "note": "The Arabic and English public views show inconsistent naming/copy quality."
+    },
+    {
+      "id": "HELP-14",
+      "status": "partial",
+      "note": "The 404 page provides a Home-page link but no search, task shortcut, or contextual recovery choices."
+    },
+    {
+      "id": "A11Y-01",
+      "status": "not_verified",
+      "note": "No automated contrast measurement was run in this pilot."
+    },
+    {
+      "id": "A11Y-02",
+      "status": "not_verified",
+      "note": "Keyboard-only operation was not tested in this public-browser pilot."
+    },
+    {
+      "id": "MOB-01",
+      "status": "not_verified",
+      "note": "A real narrow-viewport mobile audit remains pending."
+    },
+    {
+      "id": "PERF-01",
+      "status": "not_verified",
+      "note": "Perceived-performance states require a controlled transaction test."
+    }
+  ],
+  "findings": [
+    {
+      "id": "UXM-001",
+      "severity": "high",
+      "category": "forms_data_entry",
+      "page": "SendOTP / start a new request",
+      "journey": "Complete",
+      "title": "The phone-number field has no persistent visible label or input example",
+      "observed": "The public OTP page shows an empty phone field. Its context appears as a heading above and a required-message below, rather than as a field label or example tied to the input.",
+      "impact": "Citizens can hesitate over the expected format or whether the field is the required mobile-number input, creating avoidable friction at the first step of a service request.",
+      "recommendation": "Add a persistent label such as “رقم الهاتف المحمول”, show a Jordanian format example, and place the required indicator beside the label.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/tawasal/sendotp.png",
+          "path": "evidence/raw/tawasal/sendotp.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/tawasal-bekhedmetcom/UXM-001.png",
+          "path": "evidence/annotated/tawasal-bekhedmetcom/UXM-001.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Empty phone input, heading context, and separate required-message visible on the OTP page.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 700,
+            "top": 550,
+            "right": 1400,
+            "bottom": 850
+          },
+          "focusBox": {
+            "left": 10,
+            "top": 80,
+            "right": 690,
+            "bottom": 230
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://www.tawasal.gov.jo/BekhedmetCom/SendOTP",
+      "arabic": {
+        "title": "حقل رقم الهاتف لا يحتوي على تسمية مرئية دائمة أو مثال للإدخال",
+        "observed": "تعرض صفحة OTP العامة حقلاً فارغاً للهاتف، بينما تظهر سياقاته كعنوان أعلاه ورسالة إلزام أدناه بدلاً من تسمية أو مثال مرتبطين بالحقل.",
+        "impact": "قد يتردد المواطنون بشأن الصيغة المتوقعة أو ما إذا كان الحقل هو رقم الهاتف المحمول المطلوب، مما يزيد الاحتكاك في بداية الطلب.",
+        "recommendation": "أضف تسمية دائمة مثل رقم الهاتف المحمول، ومثالاً لصيغة رقم أردني، وضع مؤشر الإلزام بجوار التسمية."
+      }
+    },
+    {
+      "id": "UXM-002",
+      "severity": "medium",
+      "category": "trust_credibility",
+      "page": "SendOTP / start a new request",
+      "journey": "Complete",
+      "title": "The mobile-number collection step lacks contextual privacy/data-use reassurance",
+      "observed": "The screen asks for a working phone number to continue, but no concise explanation of why it is required or how it will be used is visible beside the field or Send action.",
+      "impact": "Users may hesitate before providing a personal contact detail, especially in a public-government service context.",
+      "recommendation": "Add one concise line near the field explaining the purpose of the number and link directly to the relevant privacy policy.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/tawasal/sendotp.png",
+          "path": "evidence/raw/tawasal/sendotp.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/tawasal-bekhedmetcom/UXM-002.png",
+          "path": "evidence/annotated/tawasal-bekhedmetcom/UXM-002.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Phone number request and Send action shown without adjacent data-use explanation.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 180,
+            "top": 600,
+            "right": 1400,
+            "bottom": 850
+          },
+          "focusBox": {
+            "left": 0,
+            "top": 40,
+            "right": 1200,
+            "bottom": 230
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://www.tawasal.gov.jo/BekhedmetCom/SendOTP",
+      "arabic": {
+        "title": "خطوة جمع رقم الهاتف المحمول تفتقر إلى طمأنة سياقية حول الخصوصية واستخدام البيانات",
+        "observed": "تطلب الشاشة رقماً هاتفياً صالحاً للمتابعة دون تفسير موجز ظاهر لسبب طلبه أو كيفية استخدامه بجوار الحقل أو زر الإرسال.",
+        "impact": "قد يتردد المستخدمون قبل تقديم بيانات اتصال شخصية، خصوصاً في سياق خدمة حكومية عامة.",
+        "recommendation": "أضف سطراً موجزاً قرب الحقل يشرح الغرض من الرقم، مع رابط مباشر لسياسة الخصوصية ذات الصلة."
+      }
+    },
+    {
+      "id": "UXM-003",
+      "severity": "medium",
+      "category": "content_microcopy",
+      "page": "English SendOTP",
+      "journey": "Understand",
+      "title": "English product naming and task copy are inconsistent",
+      "observed": "The English view visibly uses “bekhedmtcom PlatForm” and “Phone Number Or Register Via Sanad”, with inconsistent capitalization and awkward construction.",
+      "impact": "Inconsistent public-language quality weakens confidence and makes a government service feel less polished to English-speaking users.",
+      "recommendation": "Apply an approved English terminology and capitalization glossary, then QA every public heading, button, breadcrumb, and help message.",
+      "evidence": {
+        "url": "https://www.tawasal.gov.jo/BekhedmetCom/SendOTP",
+        "capture": "Public browser inspection after language switch, 2026-07-14",
+        "description": "English heading and phone/Sanad prompt visible in the public form.",
+        "sourceImage": "evidence/raw/tawasal/sendotp.png",
+        "captureMetadata": {
+          "capturedAt": "2026-07-14",
+          "method": "Chrome headless public desktop capture",
+          "captureType": "full-page screenshot",
+          "imageDimensions": {
+            "width": 1440,
+            "height": 1200
+          },
+          "sourceSupportsFinding": false
+        },
+        "evidencePending": true,
+        "evidencePendingReason": "The available capture is Arabic and does not substantiate the English-language copy observation; no matching English screenshot was captured."
+      },
+      "excludedFromPublication": true,
+      "exclusionReason": "The available capture is Arabic and does not substantiate the English-language copy observation; no matching English screenshot was captured."
+    },
+    {
+      "id": "UXM-004",
+      "severity": "medium",
+      "category": "usability",
+      "page": "SendOTP / start a new request",
+      "journey": "Complete",
+      "title": "A large repeated hero delays the start of the phone-verification task",
+      "observed": "The OTP page retains a large branded hero and duplicate platform heading above the single-field request form.",
+      "impact": "The first task step is visually pushed down and competes with decorative context, adding unnecessary scroll and attention cost.",
+      "recommendation": "Use a compact task header for authentication/request-start pages and bring the form, help, and privacy context into the first focused viewport.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/tawasal/sendotp.png",
+          "path": "evidence/raw/tawasal/sendotp.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/tawasal-bekhedmetcom/UXM-004.png",
+          "path": "evidence/annotated/tawasal-bekhedmetcom/UXM-004.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Large hero remains above the OTP card and repeats the platform context.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 0,
+            "top": 100,
+            "right": 1440,
+            "bottom": 510
+          },
+          "focusBox": {
+            "left": 0,
+            "top": 0,
+            "right": 1440,
+            "bottom": 380
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://www.tawasal.gov.jo/BekhedmetCom/SendOTP",
+      "arabic": {
+        "title": "لافتة كبيرة متكررة تؤخر بدء مهمة التحقق من الهاتف",
+        "observed": "تحتفظ صفحة OTP بلافتة كبيرة ذات علامة تجارية وعنوان منصة مكرر فوق نموذج الطلب ذي الحقل الواحد.",
+        "impact": "تُدفع أول خطوة للمهمة إلى أسفل بصرياً وتنافسها معلومات زخرفية، مما يزيد تكلفة الانتباه والتمرير.",
+        "recommendation": "استخدم رأس مهمة مضغوطاً لصفحات بدء الطلب أو المصادقة، واجعل النموذج والمساعدة وسياق الخصوصية ضمن أول شاشة مركزة."
+      }
+    },
+    {
+      "id": "UXM-005",
+      "severity": "medium",
+      "category": "information_architecture",
+      "page": "Public 404 page",
+      "journey": "Recover",
+      "title": "The 404 recovery path offers only a generic Home-page route",
+      "observed": "The public 404 page presents a “Home page” button but no search, frequently used service route, or contextual recovery suggestion.",
+      "impact": "A user arriving through a broken or expired deep link must restart navigation without help finding the intended service or information.",
+      "recommendation": "Keep Home, then add Search, “Start a new request”, top tasks, and a short message that explains how to recover the intended destination.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/tawasal/404.png",
+          "path": "evidence/raw/tawasal/404.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/tawasal-bekhedmetcom/UXM-005.png",
+          "path": "evidence/annotated/tawasal-bekhedmetcom/UXM-005.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "404 page displays generic explanation and a single Home page action.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 500,
+            "top": 250,
+            "right": 940,
+            "bottom": 630
+          },
+          "focusBox": {
+            "left": 80,
+            "top": 180,
+            "right": 380,
+            "bottom": 350
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://www.tawasal.gov.jo/Home/ErrorPage",
+      "arabic": {
+        "title": "مسار التعافي من صفحة 404 يقدم طريقاً عاماً للصفحة الرئيسية فقط",
+        "observed": "تعرض صفحة 404 العامة زر الصفحة الرئيسية دون بحث أو مسار للخدمات المستخدمة كثيراً أو اقتراح تعافٍ سياقي.",
+        "impact": "يضطر المستخدم الذي يصل عبر رابط عميق معطل أو منتهٍ إلى إعادة بدء التنقل دون مساعدة في العثور على الخدمة أو المعلومة المقصودة.",
+        "recommendation": "أبقِ الصفحة الرئيسية ثم أضف البحث وبدء طلب جديد وأهم المهام ورسالة قصيرة تشرح كيفية استعادة الوجهة المقصودة."
+      }
+    },
+    {
+      "id": "UXM-006",
+      "severity": "low",
+      "category": "content_microcopy",
+      "page": "BekhedmetCom dashboard",
+      "journey": "Understand",
+      "title": "The satisfaction metric does not show its unit, scale, or response base",
+      "observed": "The dashboard shows “62” for satisfaction while neighbouring dashboard measures use percentages; no scale or number of evaluations is visible in the metric card.",
+      "impact": "A public reader cannot confidently interpret whether 62 is a percentage, a score, or a count, reducing transparency of the dashboard.",
+      "recommendation": "Label the satisfaction measure explicitly—for example “62% satisfaction (n=…)” or “3.1/5 average rating (n=…)”—and expose the response base.",
+      "evidence": {
+        "url": "https://www.tawasal.gov.jo/BekhedmetCom/BekhedmetComDashboard",
+        "capture": "Public browser inspection, 2026-07-14",
+        "description": "Dashboard metric card shows 62 with satisfaction label while adjacent cards use percent signs.",
+        "sourceImage": "evidence/raw/tawasal/dashboard.png",
+        "captureMetadata": {
+          "capturedAt": "2026-07-14",
+          "method": "Chrome headless public desktop capture",
+          "captureType": "full-page screenshot",
+          "imageDimensions": {
+            "width": 1440,
+            "height": 1200
+          },
+          "sourceSupportsFinding": false
+        },
+        "evidencePending": true,
+        "evidencePendingReason": "The raw dashboard capture displays a 404 page and does not substantiate the satisfaction-metric observation."
+      },
+      "excludedFromPublication": true,
+      "exclusionReason": "The raw dashboard capture displays a 404 page and does not substantiate the satisfaction-metric observation."
+    }
+  ]
+}

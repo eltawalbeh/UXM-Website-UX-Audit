@@ -1,0 +1,343 @@
+{
+  "id": "pilot_jordan_gov_onyourservice_20260714",
+  "client": "Jordan.gov / On Your Service",
+  "url": "https://jordan.gov.jo/ar/custompages/onyourservice",
+  "status": "pilot_in_review",
+  "locale": "ar",
+  "scope": {
+    "included": [
+      "Public Arabic on-your-service request form",
+      "Public navigation, search, and form hierarchy"
+    ],
+    "excluded": [
+      "Form submission and field validation",
+      "Personal data entry",
+      "Authenticated or back-office workflows",
+      "OTP/account lifecycle",
+      "Narrow mobile viewport",
+      "Keyboard-only and automated assistive-technology test",
+      "English locale verification"
+    ],
+    "limitation": "Language-switch interaction triggered a Cloudflare block in the audit browser; this was not treated as a product finding because it may be environment/security-service specific."
+  },
+  "assessmentSummary": {
+    "score": 50,
+    "scoredCheckpoints": 10,
+    "notVerified": 5,
+    "method": "Pass = 1, Partial = 0.5, Issue = 0; Not verified excluded."
+  },
+  "assessments": [
+    {
+      "id": "NAV-01",
+      "status": "pass",
+      "note": "Public primary navigation, search, and breadcrumb are visible."
+    },
+    {
+      "id": "FORM-13",
+      "status": "pass",
+      "note": "Visible labels are provided above/adjacent to main fields."
+    },
+    {
+      "id": "FORM-15",
+      "status": "pass",
+      "note": "Required fields are visibly marked with an asterisk."
+    },
+    {
+      "id": "FORM-18",
+      "status": "partial",
+      "note": "Fields are logically ordered, but the dependency between government entity and disabled department is not explained in context."
+    },
+    {
+      "id": "FORM-19",
+      "status": "partial",
+      "note": "Phone placeholder is present, but subject/detail expectations and attachment purpose are not explained before entry."
+    },
+    {
+      "id": "FORM-21",
+      "status": "partial",
+      "note": "The category radio options are available, but the broad, long form lacks decision guidance for choosing the appropriate route."
+    },
+    {
+      "id": "FORM-28",
+      "status": "not_verified",
+      "note": "Validation behavior was not triggered because no personal data or submission was entered."
+    },
+    {
+      "id": "FORM-29",
+      "status": "not_verified",
+      "note": "Field/form validation timing was not tested."
+    },
+    {
+      "id": "PRIV-02",
+      "status": "issue",
+      "note": "The public form requests a mobile number, detailed case narrative, and optional attachments without contextual privacy/data-use explanation near the fields."
+    },
+    {
+      "id": "CONTENT-25",
+      "status": "issue",
+      "note": "The Arabic form contains visibly untranslated attachment-widget strings including Drop files here, Choose Files, and Please select file(s) to upload."
+    },
+    {
+      "id": "TO-16",
+      "status": "issue",
+      "note": "Large hero, sharing controls, service/support content, sidebar contacts, and a long attachment area create substantial vertical travel before and through the task."
+    },
+    {
+      "id": "VIS-11",
+      "status": "partial",
+      "note": "The page hierarchy gives substantial prominence to banner imagery and peripheral support content before the task form."
+    },
+    {
+      "id": "A11Y-01",
+      "status": "not_verified",
+      "note": "No automated contrast measurement was run."
+    },
+    {
+      "id": "A11Y-02",
+      "status": "not_verified",
+      "note": "Keyboard-only operation was not tested."
+    },
+    {
+      "id": "MOB-01",
+      "status": "not_verified",
+      "note": "A real narrow-viewport mobile audit remains pending."
+    }
+  ],
+  "findings": [
+    {
+      "id": "UXM-001",
+      "severity": "high",
+      "category": "trust_credibility",
+      "page": "Jordan.gov / بخدمتكم public form",
+      "journey": "Complete",
+      "title": "Sensitive request data is collected without contextual privacy/data-use reassurance",
+      "observed": "The form requests a mobile number, a detailed narrative, and optional attachments. The visible privacy-policy link is in the global footer, not next to the collection action.",
+      "impact": "Citizens may hesitate to submit personal or sensitive details, or may proceed without understanding how their information will be used.",
+      "recommendation": "Add concise data-use and retention reassurance immediately above the Send action, with a direct contextual link to the privacy policy.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/jordan/onyourservice.png",
+          "path": "evidence/raw/jordan/onyourservice.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/jordan-gov-onyourservice/UXM-001.png",
+          "path": "evidence/annotated/jordan-gov-onyourservice/UXM-001.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Public form fields for phone number, details, attachments, and Send action visible without adjacent privacy explanation.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 600,
+            "top": 800,
+            "right": 1380,
+            "bottom": 1420
+          },
+          "focusBox": {
+            "left": 15,
+            "top": 20,
+            "right": 765,
+            "bottom": 600
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://jordan.gov.jo/ar/custompages/onyourservice",
+      "arabic": {
+        "title": "جمع بيانات الطلب الحساسة دون طمأنة سياقية حول الخصوصية واستخدام البيانات",
+        "observed": "يطلب النموذج رقم هاتف ووصفاً تفصيلياً ومرفقات اختيارية، بينما يظهر رابط سياسة الخصوصية في التذييل العام وليس بجوار إجراء الجمع.",
+        "impact": "قد يتردد المواطنون في إرسال بيانات شخصية أو حساسة، أو يرسلونها دون فهم كيفية استخدام معلوماتهم.",
+        "recommendation": "أضف طمأنة موجزة حول استخدام البيانات والاحتفاظ بها فوق زر الإرسال مباشرةً، مع رابط مباشر لسياسة الخصوصية."
+      }
+    },
+    {
+      "id": "UXM-002",
+      "severity": "medium",
+      "category": "content_microcopy",
+      "page": "Jordan.gov / بخدمتكم public form",
+      "journey": "Complete",
+      "title": "The Arabic attachment flow contains untranslated English UI",
+      "observed": "Within the Arabic form, the attachment component visibly displays English strings such as “Drop files here”, “Choose Files”, and “Please select file(s) to upload”.",
+      "impact": "Mixed language interrupts reading flow and makes the form feel incomplete or less trustworthy for Arabic-first citizens.",
+      "recommendation": "Localize every attachment-widget string, file-state message, and validation message; validate RTL alignment and text direction after localization.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/jordan/onyourservice.png",
+          "path": "evidence/raw/jordan/onyourservice.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/jordan-gov-onyourservice/UXM-002.png",
+          "path": "evidence/annotated/jordan-gov-onyourservice/UXM-002.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Arabic service form with English attachment-widget labels visible in the upload area.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 620,
+            "top": 1155,
+            "right": 1360,
+            "bottom": 1345
+          },
+          "focusBox": {
+            "left": 20,
+            "top": 35,
+            "right": 720,
+            "bottom": 140
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://jordan.gov.jo/ar/custompages/onyourservice",
+      "arabic": {
+        "title": "تدفق المرفقات العربي يحتوي على واجهة إنجليزية غير مترجمة",
+        "observed": "تظهر في مكوّن المرفقات ضمن النموذج العربي عبارات إنجليزية مثل Drop files here وChoose Files وPlease select file(s) to upload.",
+        "impact": "تقطع اللغة المختلطة تسلسل القراءة وتجعل النموذج أقل اكتمالاً أو موثوقية للمواطنين الذين يفضلون العربية.",
+        "recommendation": "عرّب جميع عبارات مكوّن المرفقات ورسائل حالة الملفات والتحقق منها، ثم تحقق من محاذاة RTL واتجاه النص."
+      }
+    },
+    {
+      "id": "UXM-003",
+      "severity": "medium",
+      "category": "usability",
+      "page": "Jordan.gov / بخدمتكم public form",
+      "journey": "Complete",
+      "title": "The request task competes with large banner and peripheral support content",
+      "observed": "A large hero image, sharing controls, service-support copy, sidebar contacts, emergency numbers, and store links appear before or alongside the long request form.",
+      "impact": "The primary citizen task—submitting a request—has reduced focus and requires more visual scanning and scrolling than necessary.",
+      "recommendation": "Use a compact task header on this route, move non-essential support/promotional blocks below the form or into a contextual help panel, and keep the first required fields in the initial task viewport.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/jordan/onyourservice.png",
+          "path": "evidence/raw/jordan/onyourservice.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/jordan-gov-onyourservice/UXM-003.png",
+          "path": "evidence/annotated/jordan-gov-onyourservice/UXM-003.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Large hero and multiple support/sidebar modules surround the primary request form.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 50,
+            "top": 115,
+            "right": 1390,
+            "bottom": 850
+          },
+          "focusBox": {
+            "left": 0,
+            "top": 0,
+            "right": 1340,
+            "bottom": 370
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://jordan.gov.jo/ar/custompages/onyourservice",
+      "arabic": {
+        "title": "مهمة الطلب تنافسها لافتة كبيرة ومحتوى دعم جانبي",
+        "observed": "تظهر صورة رئيسية كبيرة وعناصر مشاركة ونصوص دعم وخدمات واتصالات جانبية قبل نموذج الطلب الطويل أو إلى جواره.",
+        "impact": "تتراجع أولوية مهمة المواطن الأساسية، وهي إرسال الطلب، وتحتاج إلى مسح بصري وتمرير أكبر من اللازم.",
+        "recommendation": "استخدم رأس مهمة مختصراً في هذا المسار وانقل عناصر الدعم غير الضرورية أسفل النموذج أو إلى لوحة مساعدة سياقية."
+      }
+    },
+    {
+      "id": "UXM-004",
+      "severity": "medium",
+      "category": "forms_data_entry",
+      "page": "Jordan.gov / بخدمتكم public form",
+      "journey": "Complete",
+      "title": "The government-to-department dependency is not explained before the user encounters a disabled field",
+      "observed": "The department combobox is initially disabled after the government-entity selector, but no visible inline instruction explains the dependency or what will happen next.",
+      "impact": "Users can pause at a disabled control or try to interact with it without understanding the required sequence.",
+      "recommendation": "Add a concise helper message such as “اختر الجهة الحكومية أولاً لإظهار الدوائر التابعة لها” and update the department field with an explicit loading/available state.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/jordan/onyourservice.png",
+          "path": "evidence/raw/jordan/onyourservice.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/jordan-gov-onyourservice/UXM-004.png",
+          "path": "evidence/annotated/jordan-gov-onyourservice/UXM-004.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Government entity selector visible with the adjacent department selector disabled.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 600,
+            "top": 680,
+            "right": 1380,
+            "bottom": 850
+          },
+          "focusBox": {
+            "left": 20,
+            "top": 35,
+            "right": 760,
+            "bottom": 130
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://jordan.gov.jo/ar/custompages/onyourservice",
+      "arabic": {
+        "title": "اعتمادية الجهة الحكومية والقسم غير مفسرة قبل ظهور حقل معطل",
+        "observed": "تظهر قائمة القسم معطلة بعد اختيار الجهة الحكومية دون تعليمات داخلية تشرح الاعتمادية أو الخطوة التالية.",
+        "impact": "قد يتوقف المستخدم عند عنصر تحكم معطل أو يحاول استخدامه دون فهم التسلسل المطلوب.",
+        "recommendation": "أضف رسالة مساعدة موجزة توضح اختيار الجهة أولاً لإظهار الأقسام، واعرض حالة تحميل أو إتاحة صريحة لحقل القسم."
+      }
+    },
+    {
+      "id": "UXM-005",
+      "severity": "low",
+      "category": "content_microcopy",
+      "page": "Jordan.gov / بخدمتكم public form",
+      "journey": "Complete",
+      "title": "Subject and details fields do not set expectations before citizens write their request",
+      "observed": "The form provides generic labels for subject and details, but no visible example, expected level of detail, or prompt to include useful case information.",
+      "impact": "Citizens may provide incomplete descriptions, increasing manual clarification effort and delaying resolution.",
+      "recommendation": "Add concise examples and guidance for subject and details, such as service, location, date, and what outcome the citizen expects.",
+      "evidence": {
+        "sourceImage": {
+          "filename": "raw/jordan/onyourservice.png",
+          "path": "evidence/raw/jordan/onyourservice.png"
+        },
+        "annotatedImage": {
+          "filename": "annotated/jordan-gov-onyourservice/UXM-005.png",
+          "path": "evidence/annotated/jordan-gov-onyourservice/UXM-005.png"
+        },
+        "capturedAt": "2026-07-14",
+        "description": "Subject and details fields visible without task-specific entry guidance.",
+        "annotation": {
+          "type": "cropped_callout",
+          "cropBox": {
+            "left": 620,
+            "top": 860,
+            "right": 1360,
+            "bottom": 1160
+          },
+          "focusBox": {
+            "left": 10,
+            "top": 35,
+            "right": 730,
+            "bottom": 290
+          },
+          "marker": "1",
+          "color": "#B13D2A"
+        }
+      },
+      "url": "https://jordan.gov.jo/ar/custompages/onyourservice",
+      "arabic": {
+        "title": "حقلا الموضوع والتفاصيل لا يحددان التوقعات قبل كتابة الطلب",
+        "observed": "يعرض النموذج تسميات عامة للموضوع والتفاصيل دون مثال مرئي أو مستوى التفاصيل المتوقع أو إرشاد للمعلومات المفيدة.",
+        "impact": "قد يقدّم المواطنون أوصافاً ناقصة، مما يزيد جهد الاستيضاح اليدوي ويؤخر الحل.",
+        "recommendation": "أضف أمثلة وإرشادات موجزة للموضوع والتفاصيل، مثل الخدمة والموقع والتاريخ والنتيجة التي يتوقعها المواطن."
+      }
+    }
+  ]
+}

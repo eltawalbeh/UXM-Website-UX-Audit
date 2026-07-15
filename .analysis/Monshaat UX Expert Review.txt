@@ -1,0 +1,254 @@
+Website UX Expert Review
+
+14 September 2023
+                                                                                                               Monshaat Website UX Expert Review | 2
+
+UX Expert Review - Introduction
+
+         In an increasingly digital landscape, user experience (UX) plays a pivotal
+         role in determining the success of online platforms.
+
+         This UX review document delves into an evaluation of the Monshaat
+         website, aiming to comprehensively analyze its user-centric design,
+         functionality, and overall effectiveness.
+
+         As technology shapes user expectations, websites must adapt to meet
+         these evolving demands.
+
+         By examining Monshaat's user interface, navigation, accessibility, and other
+         key aspects, this review aims to identify strengths, weaknesses, and
+         opportunities for improvement.
+
+         By optimizing the user experience, Monshaat can better engage its visitors,
+         enhance user satisfaction, and achieve its goals of providing seamless
+         digital interaction for its users.
+
+                                                                                                                                                              2
+                                                                              Monshaat Website UX Expert Review | 3
+
+UX Expert Review - Usability Rating Scale
+
+The following rating scale was used in this report
+
+1  2  3  4  Low
+
+            Low: does not need to be fixed unless extra time is available on project
+
+1  2  3  4  Medium
+
+            Medium: fixing this should be given low priority.
+
+1  2  3  4  Serious
+
+            Serious: important to fix, so should be given high priority.
+
+1  2  3  4  Critical
+
+            Critical: imperative to fix this before product can be released.
+                                                                                Monshaat Website UX Expert Review | 4
+
+UX Expert Review - Categories labels
+
+The following labels were used to describe the issue categories
+
+Usability        An issue describing behaviour that prevents task completion.
+
+Bug              An issue describing unexpected or malicious behavior.
+
+UI Enhancements  Issues related to design.
+
+Feature          New features description.
+
+Content          Issues related to error messages and labels improvements.
+IA
+ID               Information architecture: Issues related to user flow and how
+                 content organized.
+
+                 Information Design: Issues related to presenting information.
+                                       Monshaat Website UX Expert Review | 5
+
+UX Expert Review - Report Information
+
+We reviewed this website on MacBook Air (Model-A2681) , macOS Ventura Version 13.0.1
+(22A400), on Chrome browser version 107.0.5304.87, with a screen resolution of 1470 x 956 px.
+
+Also, on ASUS laptop, windows 10, on Chrome browser version 108.0.5359.125, with screen
+resolution of 1280 x 800 px.
+
+All screenshots were taken at GMT +3.
+UX Expert Review - Report Format                                                                                        Monshaat Website UX Expert Review | 6
+
+               Screenshot for the issue rounded                                                                         Issue Number  1
+               by black line, the problem will be
+               highlighted with Dashed box in                                                                           Usability
+               red color and two px.
+
+                                                                                                                        1 234
+
+Issues will be described in text in a red box, with                                             Direct guidance and solutions are hinted and described in
+screenshots of the interface, to visually identify those                                        text in a green box throughout the document.
+issues.
+
+Screen Name
+Problem
+                                                                                      Solution
+
+                                                                                                dd / mm / yyyy | 00:00  Click her to view the page
+Home page
+                                                                                                                      Monshaat Website UX Expert Review | 8
+
+                                                                                                                      Issue Number  1
+
+                                                                                                                      UI Enhancements
+
+                                                                                                                      1 234
+
+The subtitle in the logo is too small to be recognized                                     We can use another variant of the logo
+
+Home page
+Problem
+                                                                                 Solution
+
+                                                                                           29 / 08 / 2023 | 11:00 AM  Click her to view the page
+                                                                                                                      Monshaat Website UX Expert Review | 9
+
+                                                                                                                      Issue Number                  2
+
+                                                                                                                      UI Enhancements
+
+                                                                                                                      1 234
+
+Navigation items color is pale and spacing is too small 
+                                  increase contrast to be close to the white and increase
+                                                                                           spacing
+Home page
+Problem
+                                                                                 Solution
+
+                                                                                           29 / 08 / 2023 | 12:00 PM  Click her to view the page
+                                                                                                                      Monshaat Website UX Expert Review | 10
+
+                                                                                                                      Issue Number              3
+
+                                                                                                                      Content
+
+                                                                                                                      1 234
+
+Icons can confuse new users, and the tooltip takes too                                     Adding labels or at least making the tooltip appear
+long to appear.                                                                            instantly
+
+Home page
+Problem
+                                                                                 Solution
+
+                                                                                           29 / 08 / 2023 | 01:00 PM  Click her to view the page
+                                                                                                                      Monshaat Website UX Expert Review | 11
+
+                                                                                                                      Issue Number  4
+
+                                                                                                                      Content
+
+                                                                                                                      1 234
+
+Services icon and menu item with same function without                                     it can apply the same concept of "About Monshaat" and no
+flyout sub menu that lead the user to another page.                                        need for the icon.
+
+Home page
+Problem
+                                                                                 Solution
+
+                                                                                           29 / 08 / 2023 | 03:00 PM  Click her to view the page
+                                                                                                                      Monshaat Website UX Expert Review | 12
+
+                                                                                                                      Issue Number                 5
+
+                                                                                                                      Feature
+
+                                                                                                                      1 234
+
+Lack of description of what the section provides.
+                                        Add a clear description to indicate to users what they
+                                                                                           expect from that section.
+Home page
+Problem
+                                                                                 Solution
+
+                                                                                           29 / 08 / 2023 | 09:10 PM  Click her to view the page
+                                                                                                                      Monshaat Website UX Expert Review | 157
+
+                                                                                                                      Issue Number  137
+
+                                                                                                                      ID
+
+                                                                                                                      1 234
+
+The distribution of elements suggests that the page is                                     Using less spacing between the elements and grouping
+disorganized.                                                                              the data type.
+
+Business dictionary
+Problem
+                                                                                 Solution
+
+                                                                                           14 / 09 / 2023 | 03:50 PM  Click her to view the page
+                                                                                                                      Monshaat Website UX Expert Review | 158
+
+                                                                                                                      Issue Number  138
+
+                                                                                                                      ID
+
+                                                                                                                      1 234
+
+wasted space.                                                                              To be removed.
+
+Business dictionary
+Problem
+                                                                                 Solution
+
+                                                                                           14 / 09 / 2023 | 04:00 PM  Click her to view the page
+                                                                                                                      Monshaat Website UX Expert Review | 159
+
+                                                                                                                      Issue Number      139
+
+                                                                                                                      ID
+
+                                                                                                                      1 234
+
+Too much space for one word.                                                               using anther format like table for example.
+
+Business dictionary
+Problem
+                                                                                 Solution
+
+                                                                                           14 / 09 / 2023 | 04:10 PM  Click her to view the page
+Conclusion
+                                                                                     Monshaat Website UX Expert Review | 161
+
+UX Expert Review - Conclusion
+
+Below is the final result for the number and type of issues found:
+
+1 42 Low         18                                                 Usability        An issue describing behaviour that
+2 71 Medium      6                                                  Bug              prevents task completion.
+3 24 Serious     26                                                 UI Enhancements
+4 2 Critical     4                                                                   An issue describing unexpected or
+                 16                                                                  malicious behavior.
+   139           15
+                 44                                                                  Issues related to design.
+         ISSUES
+                                                                    Feature          New features description.
+                                                                    Content
+                                                                    IA               Issues related to error messages and
+                                                                    ID               labels improvements.
+
+                                                                                     Information architecture: Issues related
+                                                                                     to user flow and how content
+                                                                                     organized.
+
+                                                                                     Information Design: Issues related to
+                                                                                     presenting information.
+Website UX Expert Review
+
+   Thank you for
+   your business
+   with us
+
