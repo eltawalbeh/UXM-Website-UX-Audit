@@ -12,6 +12,23 @@ if not exist ".venv\Scripts\python.exe" (
   )
 )
 
+if not exist ".env" (
+  copy /y ".env.example" ".env" >nul
+  echo A local AI configuration file was created: prototype\.env
+  echo Open it, add your NVIDIA API key after UXM_AI_API_KEY=, save it, then run this launcher again.
+  start "UXM AI configuration" notepad.exe ".env"
+  pause
+  exit /b 1
+)
+
+for /f "usebackq eol=# tokens=1,* delims==" %%A in (".env") do set "%%A=%%B"
+if "%UXM_AI_API_KEY%"=="" (
+  echo UXM_AI_API_KEY is empty in prototype\.env.
+  start "UXM AI configuration" notepad.exe ".env"
+  pause
+  exit /b 1
+)
+
 echo Installing Python requirements...
 ".venv\Scripts\python.exe" -m pip install -r requirements.txt
 if errorlevel 1 (

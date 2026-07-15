@@ -13,6 +13,22 @@ A local, evidence-led UX audit workspace and report publisher backed by SQLite.
 7. Attach source and annotated PNG/JPEG evidence to a saved finding. The server validates MIME/signature, size, paths, and persists generated filenames.
 8. Use **Check readiness** to see server-enforced publication blockers. **Print / Save PDF** checks `/api/audits/:id/readiness` first and opens the dedicated `report.html` only when `ready` is true.
 9. The dedicated report is report-only (no workspace shell), uses A4 landscape print CSS, filters excluded findings, and renders persisted annotated evidence images.
+10. **Draft with AI** is a human-review workflow: it sends the active audit scope, selected checkpoint/category/journey, entered notes, evidence metadata, and existing finding IDs to a configured provider. It returns a reviewable observation, impact, recommendation, suggested severity, confidence, missing-evidence checks, and duplicate-risk check. It does not create a finding, save data, publish, or change scoring until the reviewer explicitly chooses **Apply reviewed draft**, and then **Save changes**.
+
+## AI Audit Copilot setup (optional)
+
+The copilot intentionally has no built-in or simulated response. Without a live provider it shows **AI connection unavailable** and keeps all form notes in place.
+
+Configure any OpenAI-compatible chat-completions endpoint before starting the server:
+
+```bash
+export UXM_AI_ENDPOINT='https://your-provider.example/v1/chat/completions'
+export UXM_AI_API_KEY='your-provider-key' # omit only when the endpoint does not require a key
+export UXM_AI_MODEL='your-model-name'
+python -m backend.api_server --port 4173
+```
+
+The service uses only Python's standard library and sends a JSON request with `model`, `messages`, and `response_format`. The provider must return a JSON object (directly as `draft`, or as an OpenAI-compatible `choices[0].message.content`) with the required draft fields. Invalid/unreachable responses remain unavailable rather than being converted into fabricated audit claims.
 
 ## Run on Windows
 

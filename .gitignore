@@ -1,6 +1,7 @@
 # Local runtime and generated state (recreated by scripts/bootstrap_prototype.py)
 .venv/
 **/.venv/
+prototype/.env
 *.db
 *.sqlite
 *.sqlite3

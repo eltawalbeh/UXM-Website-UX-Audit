@@ -11,6 +11,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from backend.audit_copilot import build_context, configured_drafter
 from backend.storage import AuditRepository
 
 
@@ -35,7 +36,7 @@ def chrome_pdf_exporter(base_url: str):
     return export
 
 
-def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: int = 4173, pdf_exporter=None):
+def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: int = 4173, pdf_exporter=None, ai_drafter=None):
     static_root = Path(static_root).resolve()
 
     class Handler(BaseHTTPRequestHandler):
@@ -71,6 +72,10 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             if export_match:
                 self._export_pdf(export_match.group(1))
                 return
+            draft_match = re.fullmatch(r"/api/audits/([^/]+)/ai-draft", path)
+            if draft_match:
+                self._draft_with_ai(draft_match.group(1))
+                return
             evidence_match = re.fullmatch(r"/api/audits/([^/]+)/findings/([^/]+)/evidence", path)
             if evidence_match:
                 self._upload_evidence(evidence_match.group(1), evidence_match.group(2))
@@ -89,6 +94,23 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             repository.upsert_audit(audit)
             summary = next(item for item in repository.list_audits() if item["id"] == audit["id"])
             self._json(201, summary)
+
+        def _draft_with_ai(self, audit_id: str):
+            audit = repository.get_audit(audit_id)
+            if audit is None:
+                self._json(404, {"error": "Audit not found"})
+                return
+            try:
+                request_data = self._request_json()
+                if not isinstance(request_data, dict):
+                    raise ValueError("Draft request must be a JSON object")
+            except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+                self._json(400, {"error": str(error)})
+                return
+            drafter = ai_drafter or configured_drafter
+            result = drafter(build_context(audit, request_data))
+            # Drafting is deliberately read-only: no finding, evidence, assessment, or score is persisted here.
+            self._json(200 if result.get("status") == "ready" else 503, result)
 
         def _export_pdf(self, audit_id: str):
             locale = parse_qs(urlparse(self.path).query).get("locale", ["en"])[0]
