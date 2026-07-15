@@ -19,6 +19,7 @@ prototype/chrome-layout-profile/
 # Hermes-local and OS files
 .hermes/desktop-attachments/
 .notion_tmp_rename/
+.analysis/chrome-evidence-profile/
 *.log
 .DS_Store
 Thumbs.db

@@ -7,149 +7,107 @@
   "scope": {
     "included": [
       "Public Arabic e-services catalog at desktop viewport",
-      "Visible search/filter controls and visible service cards",
-      "Visible non-transactional notification overlay"
+      "Public catalog browsing across the loaded service-card inventory",
+      "Harmless non-personal catalog search using the term «ملعب» (stadium)",
+      "Public service-card PDF for «طلب إصدار مخطط موقع تنظيمي»",
+      "Public six-page user-guide PDF for the same service",
+      "Visible non-transactional notification overlay and public navigation"
+    ],
+    "journeys": [
+      "Browse the public service catalog",
+      "Find a service with a harmless non-personal keyword",
+      "Open public service requirements/information",
+      "Open public user instructions"
+    ],
+    "pagesVisited": [
+      {"name": "E-services catalog", "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx", "purpose": "browse and find public services"},
+      {"name": "Catalog search result: حجز ملعب", "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx", "purpose": "safe non-personal search result"},
+      {"name": "Service card: طلب إصدار مخطط موقع تنظيمي", "url": "https://www.ammancity.gov.jo/ar/gameservices/docs/daleeldepts/7.pdf?23332", "purpose": "public service requirements/information"},
+      {"name": "User guide: مخطط موقع تنظيمي والاستعلام عنها", "url": "https://www.ammancity.gov.jo/ar/gameservices/usermanual/10.pdf?23332", "purpose": "public instructions"}
     ],
     "excluded": [
-      "Entering any search terms or personal data",
-      "Login, registration, payment, request submission, and service-card actions",
-      "Authenticated, OTP, and back-office workflows",
-      "Narrow mobile viewport",
-      "Keyboard-only, screen-reader, automated accessibility, and performance testing"
+      "Personal-data entry, transaction, request submission, payments, registrations, OTP, login and service-card primary actions",
+      "Status/lookup pages that ask for a request number, phone number, or other personal/request data",
+      "Authenticated, back-office, validation and completion workflows",
+      "Keyboard-only, screen-reader, automated accessibility and performance testing"
     ],
-    "devices": [
-      "Desktop public browser, 1440 × 1200 capture"
-    ],
+    "devices": ["Desktop public browser, 1440 × 1200 capture", "Narrow public browser, 747 × 2200 capture for the safe search result"],
     "auditDate": "2026-07-15",
-    "limitation": "Findings are limited to the single public Arabic catalog state captured without interacting with form controls or service links."
+    "limitation": "Scores and findings cover only observed public, no-login, no-personal-data journeys. A visible link to a transactional or lookup page was not treated as evidence that its workflow works."
   },
   "assessmentSummary": {
     "score": 50,
-    "scoredCheckpoints": 6,
+    "scoredCheckpoints": 12,
     "notVerified": 3,
-    "method": "Pass = 1, Partial = 0.5, Issue = 0; Not verified excluded. (2 pass + 2 partial + 2 issue) / 6 = 50%."
+    "method": "Pass = 1, Partial = 0.5, Issue = 0; Not verified excluded. (5 pass + 2 partial + 5 issue) / 12 = 50%. This is a scoped public-information score, not a claim about untested transactions."
   },
   "assessments": [
-    {
-      "id": "NAV-01",
-      "status": "pass",
-      "note": "The public portal exposes a persistent top navigation and a visible breadcrumb on the captured catalog page."
-    },
-    {
-      "id": "HP-24",
-      "status": "pass",
-      "note": "The page exposes a visible service-name field, sector selector, and Search action before the service catalog."
-    },
-    {
-      "id": "FORM-15",
-      "status": "issue",
-      "note": "The sector label visibly combines a red asterisk conventionally used for required fields with the word اختياري (optional)."
-    },
-    {
-      "id": "CONTENT-24",
-      "status": "partial",
-      "note": "The page title and search controls state the catalog purpose, but the notification overlay competes with visible service content."
-    },
-    {
-      "id": "VIS-11",
-      "status": "issue",
-      "note": "The fixed red notification panel covers part of the second-row service card in the captured desktop state."
-    },
-    {
-      "id": "HELP-14",
-      "status": "partial",
-      "note": "The overlay contains a close control, but it is a small X embedded in dense warning text and the overlay still obstructs catalog content."
-    },
-    {
-      "id": "A11Y-01",
-      "status": "not_verified",
-      "note": "No automated contrast measurement was run."
-    },
-    {
-      "id": "A11Y-02",
-      "status": "not_verified",
-      "note": "Keyboard-only operation was not tested."
-    },
-    {
-      "id": "MOB-01",
-      "status": "not_verified",
-      "note": "A real narrow-viewport mobile audit remains pending."
-    }
+    {"id": "NAV-01", "status": "pass", "note": "Persistent public navigation and a breadcrumb are visible on the catalog and public information routes."},
+    {"id": "HP-24", "status": "pass", "note": "The catalog exposes a service-name field, sector selector, Search action, and a harmless keyword query successfully returns «حجز ملعب»."},
+    {"id": "PUBLIC-01", "status": "pass", "note": "The catalog's public service-card route opened without login, personal data, or submission."},
+    {"id": "PUBLIC-02", "status": "pass", "note": "The catalog's public user-guide route opened without login, personal data, or submission."},
+    {"id": "PRIV-01", "status": "pass", "note": "The audited catalog search accepted the harmless non-personal term «ملعب» and returned a public result without a transaction."},
+    {"id": "FORM-15", "status": "issue", "note": "The sector label visibly combines a red asterisk conventionally used for required fields with «اختياري» (optional)."},
+    {"id": "CONTENT-24", "status": "partial", "note": "Catalog and service-card titles communicate purpose, but public information is split between a dense PDF card and a separate PDF guide."},
+    {"id": "VIS-11", "status": "issue", "note": "The fixed red notification overlays catalog content and the safe-search filter area."},
+    {"id": "HELP-14", "status": "partial", "note": "The overlay has a close X, but it is embedded in dense text and initially competes with controls/content."},
+    {"id": "CONTENT-31", "status": "issue", "note": "The safe keyword result renders as a very sparse, tall card, with the public information actions pushed to its bottom edge."},
+    {"id": "INFO-12", "status": "issue", "note": "The public service card presents requirements and categories in a tightly packed tabular PDF at its default fitted view."},
+    {"id": "HELP-07", "status": "issue", "note": "The public user-guide route begins on a branding-only cover; a user must advance into the six-page PDF before any task instructions are visible."},
+    {"id": "A11Y-01", "status": "not_verified", "note": "No automated contrast or PDF-tagging measurement was run."},
+    {"id": "A11Y-02", "status": "not_verified", "note": "Keyboard-only operation was not tested."},
+    {"id": "MOB-01", "status": "not_verified", "note": "The narrow capture covers the safe search result only; it is not a complete mobile audit."}
   ],
   "findings": [
     {
-      "id": "UXM-001",
-      "severity": "medium",
-      "category": "forms_data_entry",
-      "page": "E-services portal / catalog filters",
-      "journey": "Find a service",
+      "id": "UXM-001", "severity": "medium", "category": "forms_data_entry", "page": "E-services portal / catalog filters", "journey": "Find a service",
       "title": "The sector filter sends contradictory requiredness signals",
-      "observed": "The visible sector label combines a red asterisk with the Arabic word “اختياري” (optional). The same control is displayed above the sector selector.",
-      "impact": "People cannot reliably tell whether they must choose a sector before searching, which can cause unnecessary effort or prevent confident use of the catalog filters.",
-      "recommendation": "Use one unambiguous state: remove the asterisk when the sector is optional, or label it as required and enforce that state consistently. Add helper text only if users need to understand the filter’s effect.",
-      "evidence": {
-        "sourceImage": {
-          "filename": "raw/ammancity/eservices-portal.png",
-          "path": "evidence/raw/ammancity/eservices-portal.png"
-        },
-        "annotatedImage": {
-          "filename": "annotated/ammancity-eservices/UXM-001.png",
-          "path": "evidence/annotated/ammancity-eservices/UXM-001.png"
-        },
-        "capturedAt": "2026-07-15T11:39:51Z",
-        "description": "Public Arabic catalog filter label visibly shows both a red asterisk and optional status for the sector selector.",
-        "annotation": {
-          "type": "cropped_callout",
-          "cropBox": {"left": 600, "top": 390, "right": 1100, "bottom": 515},
-          "focusBox": {"left": 205, "top": 18, "right": 392, "bottom": 48},
-          "marker": "1",
-          "color": "#B8141E"
-        }
-      },
+      "observed": "The visible sector label combines a red asterisk with the Arabic word «اختياري» (optional).",
+      "impact": "People cannot reliably tell whether they must choose a sector before searching, creating avoidable effort and uncertainty.",
+      "recommendation": "Use one unambiguous state: remove the asterisk when the sector is optional, or label and enforce it as required. Add concise helper text only if users need to understand the filter’s effect.",
       "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx",
-      "arabic": {
-        "title": "مرشح القطاع يرسل إشارات متناقضة حول إلزامية الإدخال",
-        "observed": "يجمع عنوان حقل القطاع الظاهر بين علامة النجمة الحمراء وكلمة «اختياري»، ويظهر الحقل نفسه فوق قائمة اختيار القطاع.",
-        "impact": "لا يستطيع المستخدم تحديد ما إذا كان اختيار القطاع مطلوباً قبل البحث، مما قد يسبب جهداً غير ضروري أو يقلل الثقة في استخدام مرشحات الدليل.",
-        "recommendation": "استخدم حالة واحدة واضحة: أزل النجمة إذا كان القطاع اختيارياً، أو صِفه بأنه إلزامي وطبّق ذلك بصورة متسقة. أضف نصاً مساعداً فقط إذا احتاج المستخدم إلى فهم أثر المرشح."
-      }
+      "evidence": {"sourceImage": {"filename": "raw/ammancity/eservices-catalog-20260715.png", "path": "evidence/raw/ammancity/eservices-catalog-20260715.png"}, "annotatedImage": {"filename": "annotated/ammancity-eservices/UXM-001.png", "path": "evidence/annotated/ammancity-eservices/UXM-001.png"}, "capturedAt": "2026-07-15T15:49:51Z", "description": "Public desktop catalog filter visibly shows both a red asterisk and optional status for the sector selector.", "annotation": {"type": "cropped_callout", "cropBox": {"left": 520, "top": 375, "right": 1140, "bottom": 525}, "focusBox": {"left": 220, "top": 40, "right": 520, "bottom": 110}, "marker": "1", "color": "#B8141E"}},
+      "arabic": {"title": "مرشح القطاع يرسل إشارات متناقضة حول إلزامية الإدخال", "observed": "يجمع عنوان حقل القطاع الظاهر بين علامة النجمة الحمراء وكلمة «اختياري».", "impact": "لا يستطيع المستخدم تحديد ما إذا كان اختيار القطاع مطلوباً قبل البحث، مما يسبب جهداً وعدم يقين يمكن تجنبهما.", "recommendation": "استخدم حالة واحدة واضحة: أزل النجمة إذا كان القطاع اختيارياً، أو صِفه وطبّق عليه حالة الإلزام. أضف نصاً مساعداً موجزاً عند الحاجة فقط."}
     },
     {
-      "id": "UXM-002",
-      "severity": "medium",
-      "category": "usability",
-      "page": "E-services portal / service catalog",
-      "journey": "Browse services",
-      "title": "A fixed notification obscures a service card while users browse the catalog",
-      "observed": "A red notification panel remains over the lower-left portion of the captured catalog and covers the title/action area of a visible second-row service card.",
-      "impact": "A citizen browsing available services can lose access to part of the card’s content and actions until they notice and dismiss the overlay.",
-      "recommendation": "Do not position non-critical notices over catalog content. Place the notice in the normal page flow or reserve space for it; if it must be dismissible, use a clearly labelled close control and restore unobstructed access immediately.",
-      "evidence": {
-        "sourceImage": {
-          "filename": "raw/ammancity/eservices-portal.png",
-          "path": "evidence/raw/ammancity/eservices-portal.png"
-        },
-        "annotatedImage": {
-          "filename": "annotated/ammancity-eservices/UXM-002.png",
-          "path": "evidence/annotated/ammancity-eservices/UXM-002.png"
-        },
-        "capturedAt": "2026-07-15T11:39:51Z",
-        "description": "A fixed red notification visibly overlaps the second-row card content in the public Arabic service catalog.",
-        "annotation": {
-          "type": "cropped_callout",
-          "cropBox": {"left": 0, "top": 940, "right": 440, "bottom": 1200},
-          "focusBox": {"left": 10, "top": 86, "right": 315, "bottom": 250},
-          "marker": "1",
-          "color": "#B8141E"
-        }
-      },
+      "id": "UXM-002", "severity": "medium", "category": "usability", "page": "E-services portal / catalog", "journey": "Browse the public catalog",
+      "title": "A fixed notification obscures catalog content and filtering controls",
+      "observed": "The red SMS notification overlays the lower catalog area in the desktop capture and covers the left side of the filter/result region in the safe search capture.",
+      "impact": "Citizens can lose immediate access to visible service content or need to discover a small close control before filtering and browsing confidently.",
+      "recommendation": "Place non-critical notices in normal page flow or dedicated reserved space. If dismissal is necessary, make the control prominent and return unobstructed content access immediately.",
       "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx",
-      "arabic": {
-        "title": "إشعار ثابت يحجب بطاقة خدمة أثناء تصفح الدليل",
-        "observed": "تظل لوحة إشعار حمراء فوق الجزء السفلي الأيسر من الدليل الظاهر، وتحجب منطقة العنوان والإجراءات لبطاقة خدمة ظاهرة في الصف الثاني.",
-        "impact": "قد يفقد المواطن الذي يتصفح الخدمات جزءاً من محتوى البطاقة وإجراءاتها إلى أن يلاحظ التراكب ويغلقه.",
-        "recommendation": "لا تضع الإشعارات غير الحرجة فوق محتوى الدليل. اعرض الإشعار ضمن تدفق الصفحة أو احجز له مساحة؛ وإذا كان قابلاً للإغلاق، فاستخدم إجراء إغلاق واضح التسمية وأعد إتاحة المحتوى فوراً."
-      }
+      "evidence": {"sourceImage": {"filename": "raw/ammancity/eservices-catalog-20260715.png", "path": "evidence/raw/ammancity/eservices-catalog-20260715.png"}, "annotatedImage": {"filename": "annotated/ammancity-eservices/UXM-002.png", "path": "evidence/annotated/ammancity-eservices/UXM-002.png"}, "capturedAt": "2026-07-15T15:49:51Z", "description": "A fixed notification visibly overlaps public catalog content.", "annotation": {"type": "cropped_callout", "cropBox": {"left": 0, "top": 430, "right": 465, "bottom": 660}, "focusBox": {"left": 0, "top": 15, "right": 330, "bottom": 205}, "marker": "1", "color": "#B8141E"}},
+      "arabic": {"title": "إشعار ثابت يحجب محتوى الدليل وعناصر التصفية", "observed": "يتراكب إشعار الرسائل النصية الأحمر فوق مساحة من الدليل، ويغطي جزءاً من منطقة التصفية والنتائج في البحث الآمن.", "impact": "قد يفقد المواطن الوصول الفوري إلى محتوى الخدمة أو يحتاج إلى اكتشاف زر إغلاق صغير قبل التصفية والتصفح بثقة.", "recommendation": "اعرض الإشعارات غير الحرجة ضمن تدفق الصفحة أو مساحة محجوزة. وإذا لزم الإغلاق، اجعل الإجراء بارزاً وأعد إتاحة المحتوى فوراً."}
+    },
+    {
+      "id": "UXM-003", "severity": "medium", "category": "information_architecture", "page": "E-services portal / safe search result: حجز ملعب", "journey": "Find a service with a harmless keyword",
+      "title": "A single search result uses a tall sparse card that separates the service from its public information actions",
+      "observed": "Searching the non-personal term «ملعب» returns «حجز ملعب» in a tall card with a large blank central area; the service-card and user-guide links sit at the bottom.",
+      "impact": "The returned result is recognisable, but citizens must scan through empty space to reach the actions that explain the service, slowing the next safe information step.",
+      "recommendation": "Use a compact result layout: keep the service name, sector, key actions and a short description in one visible grouping; reserve the large card treatment for useful supporting content.",
+      "url": "https://www.ammancity.gov.jo/ar/gameservices/eservices.aspx",
+      "evidence": {"sourceImage": {"filename": "raw/ammancity/eservices-search-malaab-20260715.png", "path": "evidence/raw/ammancity/eservices-search-malaab-20260715.png"}, "annotatedImage": {"filename": "annotated/ammancity-eservices/UXM-003.png", "path": "evidence/annotated/ammancity-eservices/UXM-003.png"}, "capturedAt": "2026-07-15T15:50:20Z", "description": "Safe search for «ملعب» returns «حجز ملعب» in a sparse, tall result card.", "annotation": {"type": "cropped_callout", "cropBox": {"left": 215, "top": 620, "right": 540, "bottom": 1050}, "focusBox": {"left": 20, "top": 20, "right": 305, "bottom": 395}, "marker": "1", "color": "#B8141E"}},
+      "arabic": {"title": "نتيجة البحث المفردة تستخدم بطاقة طويلة تفصل الخدمة عن إجراءات معلوماتها", "observed": "أعاد البحث الآمن بكلمة «ملعب» خدمة «حجز ملعب» في بطاقة طويلة ذات مساحة وسطى فارغة كبيرة، بينما تظهر روابط بطاقة الخدمة ودليل المستخدم في الأسفل.", "impact": "يمكن تمييز النتيجة، لكن على المواطن مسح مساحة فارغة قبل الوصول إلى الإجراءات التي تشرح الخدمة، مما يبطئ خطوة المعلومات التالية.", "recommendation": "استخدم تخطيط نتيجة مضغوطاً يجمع اسم الخدمة والقطاع والإجراءات الرئيسية ووصفاً قصيراً في مجموعة مرئية واحدة."}
+    },
+    {
+      "id": "UXM-004", "severity": "medium", "category": "content_readability", "page": "Public service card PDF / طلب إصدار مخطط موقع تنظيمي", "journey": "Open public service requirements",
+      "title": "Public service requirements are presented in a dense, small-type table at the default fitted view",
+      "observed": "The one-page public service card opens in the browser PDF viewer at 56% fit, where category, document, fee and delivery information is compressed into tightly ruled table rows.",
+      "impact": "Citizens seeking prerequisites must zoom and scan a dense document before they can confidently understand eligibility, required documents and delivery details.",
+      "recommendation": "Publish the core requirements as a responsive HTML summary before or alongside the PDF; use grouped headings, plain-language bullets and a download option for the formal card.",
+      "url": "https://www.ammancity.gov.jo/ar/gameservices/docs/daleeldepts/7.pdf?23332",
+      "evidence": {"sourceImage": {"filename": "raw/ammancity/service-card-7-viewer-20260715.png", "path": "evidence/raw/ammancity/service-card-7-viewer-20260715.png"}, "annotatedImage": {"filename": "annotated/ammancity-eservices/UXM-004.png", "path": "evidence/annotated/ammancity-eservices/UXM-004.png"}, "capturedAt": "2026-07-15T15:52:11Z", "description": "Public service-card PDF shown in its browser viewer at fitted 56% scale; requirement information is densely tabulated.", "annotation": {"type": "cropped_callout", "cropBox": {"left": 300, "top": 95, "right": 755, "bottom": 480}, "focusBox": {"left": 25, "top": 40, "right": 440, "bottom": 370}, "marker": "1", "color": "#B8141E"}},
+      "arabic": {"title": "متطلبات الخدمة العامة معروضة في جدول كثيف وصغير النص في العرض الملائم الافتراضي", "observed": "تفتح بطاقة الخدمة العامة ذات الصفحة الواحدة في عارض PDF عند ملاءمة 56%، حيث تُضغط معلومات الفئات والوثائق والرسوم والتسليم في صفوف جدول متقاربة.", "impact": "يحتاج المواطن الباحث عن المتطلبات إلى التكبير ومسح وثيقة كثيفة قبل فهم الأهلية والوثائق وتفاصيل التسليم بثقة.", "recommendation": "انشر ملخص المتطلبات الأساسية كصفحة HTML متجاوبة قبل PDF أو بجانبه، مع عناوين مجمعة ونقاط بلغة واضحة وخيار تنزيل البطاقة الرسمية."}
+    },
+    {
+      "id": "UXM-005", "severity": "low", "category": "help_guidance", "page": "Public user guide PDF / مخطط موقع تنظيمي والاستعلام عنها", "journey": "Open public user instructions",
+      "title": "The public user guide opens on a branding-only cover before any task guidance",
+      "observed": "The user-guide link opens a six-page PDF whose first visible page is largely a municipal logo, guide title and white space; no task steps, contents or quick-start link are visible on entry.",
+      "impact": "A citizen who opens instructions from a service result gets no immediate orientation and must advance through the document before learning whether the guide contains the needed action.",
+      "recommendation": "Put a concise purpose, prerequisite summary and linked step list on the first screen/page; retain the cover as a compact header rather than the sole entry content.",
+      "url": "https://www.ammancity.gov.jo/ar/gameservices/usermanual/10.pdf?23332",
+      "evidence": {"sourceImage": {"filename": "raw/ammancity/user-guide-10-viewer-20260715.png", "path": "evidence/raw/ammancity/user-guide-10-viewer-20260715.png"}, "annotatedImage": {"filename": "annotated/ammancity-eservices/UXM-005.png", "path": "evidence/annotated/ammancity-eservices/UXM-005.png"}, "capturedAt": "2026-07-15T15:52:17Z", "description": "Public six-page user-guide PDF opens on a largely branding-only cover in the browser viewer.", "annotation": {"type": "cropped_callout", "cropBox": {"left": 300, "top": 55, "right": 755, "bottom": 480}, "focusBox": {"left": 20, "top": 15, "right": 445, "bottom": 415}, "marker": "1", "color": "#B8141E"}},
+      "arabic": {"title": "دليل المستخدم العام يفتح على غلاف تعريفي فقط قبل أي إرشاد للمهمة", "observed": "يفتح رابط دليل المستخدم ملف PDF من ست صفحات، وتظهر الصفحة الأولى بشعار الأمانة وعنوان الدليل ومساحة بيضاء كبيرة دون خطوات أو فهرس أو رابط بدء سريع ظاهر.", "impact": "لا يحصل المواطن الذي يفتح الإرشادات من نتيجة خدمة على توجيه فوري، ويحتاج إلى التنقل داخل المستند قبل معرفة ما إذا كان الدليل يتضمن الإجراء المطلوب.", "recommendation": "اعرض الغرض المختصر وملخص المتطلبات وقائمة خطوات مرتبطة في الشاشة أو الصفحة الأولى، مع الاحتفاظ بالغلاف كرأس مضغوط بدلاً من أن يكون المحتوى الوحيد عند الدخول."}
     }
   ]
 }

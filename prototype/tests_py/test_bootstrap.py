@@ -36,7 +36,7 @@ class FreshCloneBootstrapTests(unittest.TestCase):
 
             self.assertTrue(database.is_file())
             self.assertEqual(imported, {
-                "pilot_ammancity_eservices_20260715": 2,
+                "pilot_ammancity_eservices_20260715": 5,
                 "pilot_jordan_gov_onyourservice_20260714": 5,
                 "pilot_tawasal_bekhedmetcom_20260714": 4,
             })
