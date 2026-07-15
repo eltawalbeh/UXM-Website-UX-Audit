@@ -20,6 +20,7 @@ prototype/chrome-layout-profile/
 .hermes/desktop-attachments/
 .notion_tmp_rename/
 .analysis/chrome-evidence-profile/
+.analysis/ammancity-search-malaab.txt
 *.log
 .DS_Store
 Thumbs.db
