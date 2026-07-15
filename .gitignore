@@ -1,9 +1,14 @@
-# Local runtime and sensitive/generated state
-prototype/.venv/
-prototype/data/*.db
+# Local runtime and generated state (recreated by scripts/bootstrap_prototype.py)
+.venv/
+**/.venv/
+*.db
+*.sqlite
+*.sqlite3
 prototype/data/backups/
 prototype/evidence/uploads/
 prototype/artifacts/
+**/artifacts/
+*.pdf
 
 # Local browser and Python caches
 **/__pycache__/
