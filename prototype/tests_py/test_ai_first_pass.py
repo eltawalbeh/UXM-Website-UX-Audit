@@ -7,7 +7,7 @@ from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from backend.storage import AuditRepository
-from backend.ai_first_pass import load_checkpoint_library, normalize_provider_candidates
+from backend.ai_first_pass import detect_product_type, load_checkpoint_library, normalize_provider_candidates
 
 
 CANDIDATE = {
@@ -173,6 +173,16 @@ class AiFirstPassApiTests(unittest.TestCase):
 
         self.assertEqual(len(context["checkpointLibrary"]), 48)
         self.assertTrue({item["id"] for item in context["checkpointLibrary"]}.issubset({item["id"] for item in load_checkpoint_library()}))
+    def test_product_type_detection_suggests_when_supported_and_requests_manual_choice_when_unclear(self):
+        government = detect_product_type("https://service.gov.jo/", "Official government citizen services portal")
+        ecommerce = detect_product_type("https://store.example/", "Shop products, add to cart, checkout and shipping")
+        unclear = detect_product_type("https://example.com/", "Coming soon")
+
+        self.assertEqual(government["status"], "detected")
+        self.assertEqual(government["productType"], "government_civic")
+        self.assertEqual(ecommerce["productType"], "ecommerce")
+        self.assertEqual(unclear["status"], "needs_input")
+        self.assertNotIn("productType", unclear)
 
 
 if __name__ == "__main__":

@@ -43,6 +43,30 @@ def safe_public_url(value: object) -> str:
     return urlunparse((parsed.scheme, parsed.netloc, parsed.path or "/", "", parsed.query, ""))
 
 
+def detect_product_type(url: str, text: str) -> dict:
+    hostname = (urlparse(url).hostname or "").lower()
+    haystack = f"{hostname} {text}".lower()
+    keyword_groups = {
+        "government_civic": ("government", "ministry", "municipality", "citizen", "public service", ".gov"),
+        "ecommerce": ("shop", "product", "cart", "checkout", "shipping", "order", "buy now"),
+        "saas_digital_product": ("software", "platform", "pricing plan", "free trial", "dashboard", "api", "subscription"),
+        "corporate_marketing": ("company", "about us", "our services", "our team", "investor", "corporate"),
+        "content_publisher": ("article", "news", "author", "published", "magazine", "subscribe", "editorial"),
+    }
+    scores = {product: sum(1 for keyword in keywords if keyword in haystack) for product, keywords in keyword_groups.items()}
+    if hostname.endswith(".gov") or ".gov." in hostname:
+        scores["government_civic"] += 3
+    ranked = sorted(scores.items(), key=lambda item: item[1], reverse=True)
+    if not ranked or ranked[0][1] < 2 or (len(ranked) > 1 and ranked[0][1] == ranked[1][1]):
+        return {"status": "needs_input", "message": "Product type could not be detected confidently. Choose it manually before selecting a bundle."}
+    product_type, score = ranked[0]
+    return {
+        "status": "detected", "productType": product_type, "productTypeLabel": PRODUCT_TYPES[product_type],
+        "confidence": "high" if score >= 4 else "medium",
+        "message": "Product type suggested from the public page. Confirm or change it before selecting a bundle.",
+    }
+
+
 def scope_request(data: dict, target_url: str) -> dict:
     product_type, bundle = data.get("productType"), data.get("bundle")
     if product_type not in PRODUCT_TYPES: raise ValueError("A valid product type is required before First Pass")

@@ -12,7 +12,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from backend.audit_copilot import build_context, configured_drafter
-from backend.ai_first_pass import build_first_pass_context, configured_first_pass_drafter, explore_public_pages, finalize_scope, safe_public_url, scope_request
+from backend.ai_first_pass import build_first_pass_context, configured_first_pass_drafter, detect_product_type, explore_public_pages, finalize_scope, safe_public_url, scope_request
 from backend.storage import AuditRepository
 
 
@@ -77,6 +77,10 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             if draft_match:
                 self._draft_with_ai(draft_match.group(1))
                 return
+            detect_match = re.fullmatch(r"/api/audits/([^/]+)/detect-product-type", path)
+            if detect_match:
+                self._detect_product_type(detect_match.group(1))
+                return
             first_pass_match = re.fullmatch(r"/api/audits/([^/]+)/ai-first-pass", path)
             if first_pass_match:
                 self._first_pass_with_ai(first_pass_match.group(1))
@@ -116,6 +120,24 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             result = drafter(build_context(audit, request_data))
             # Drafting is deliberately read-only: no finding, evidence, assessment, or score is persisted here.
             self._json(200 if result.get("status") == "ready" else 503, result)
+
+        def _detect_product_type(self, audit_id: str):
+            audit = repository.get_audit(audit_id)
+            if audit is None:
+                self._json(404, {"error": "Audit not found"})
+                return
+            try:
+                request_data = self._request_json()
+                target_url = safe_public_url(request_data.get("url") or audit.get("url"))
+            except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+                self._json(400, {"error": str(error)})
+                return
+            exploration = explore_public_pages(target_url, {"bundle": "general_health_check", "selectedPages": []})
+            if exploration.get("status") != "ready":
+                self._json(200, {"status": "needs_input", "message": "Product type could not be detected from the public page. Choose it manually."})
+                return
+            page = exploration["scope"]["visited"][0]
+            self._json(200, detect_product_type(page["url"], f"{page.get('title', '')} {page.get('textExcerpt', '')}"))
 
         def _first_pass_with_ai(self, audit_id: str):
             audit = repository.get_audit(audit_id)
