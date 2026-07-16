@@ -201,6 +201,9 @@ class AuditRepository:
                  "status": row["status"], "createdAt": row["created_at"], "updatedAt": row["updated_at"],
                  "auditCount": row["audit_count"]} for row in rows]
 
+    def get_project(self, project_id: str) -> dict | None:
+        return next((project for project in self.list_projects() if project["id"] == project_id), None)
+
     def update_project_status(self, project_id: str, status: str) -> dict:
         if status not in self.PROJECT_STATUSES:
             raise ValueError("Invalid project status")

@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "templates": [
+    {
+      "id": "government-civic-v1",
+      "name": "Government / Civic Service",
+      "description": "Public-service discovery, eligibility, application, support, and trust.",
+      "productType": "government_civic",
+      "defaultBundle": "full_website",
+      "journeys": ["Discover a service", "Understand eligibility and requirements", "Start and complete an application", "Track status or request support", "Recover from errors"],
+      "checkpointIds": ["HP-01","HP-02","HP-04","HP-09","HP-11","HP-14","HP-15","HP-16","HP-18","NAV-01","NAV-02","NAV-03","NAV-04","NAV-05","NAV-06","NAV-07","NAV-08","NAV-09","NAV-10","FORM-01","FORM-02","FORM-03","FORM-04","FORM-05","FORM-06","FORM-07","FORM-08","FORM-09","FORM-10","TRUST-01","TRUST-02","TRUST-03","TRUST-04","TRUST-05","CONTENT-01","CONTENT-02","CONTENT-03","CONTENT-04","CONTENT-05","A11Y-01","A11Y-02","A11Y-03","A11Y-04","A11Y-05","MOB-01","MOB-02","MOB-03","MOB-04","HELP-01","HELP-02","HELP-03","PRIV-01","PRIV-02","BUG-01","BUG-02"],
+      "evidenceRequirements": ["page_url", "journey", "source_screenshot", "annotated_screenshot", "capture_timestamp", "viewport"],
+      "reportSections": ["cover", "snapshot", "scope", "methodology", "scorecard", "roadmap", "findings", "conclusion"]
+    },
+    {
+      "id": "corporate-marketing-v1",
+      "name": "Corporate / Marketing",
+      "description": "Value proposition, service exploration, credibility, and lead conversion.",
+      "productType": "corporate_marketing",
+      "defaultBundle": "general_health_check",
+      "journeys": ["Understand the organization", "Explore services or capabilities", "Evaluate credibility", "Find proof and case studies", "Contact or convert"],
+      "checkpointIds": ["HP-01","HP-04","HP-05","HP-09","HP-12","HP-13","HP-14","HP-15","HP-18","HP-19","NAV-01","NAV-02","NAV-03","NAV-04","NAV-05","NAV-06","NAV-08","NAV-09","NAV-10","NAV-11","CONTENT-01","CONTENT-02","CONTENT-03","CONTENT-04","CONTENT-05","CONTENT-06","CONTENT-07","CONTENT-08","CONTENT-09","CONTENT-10","TRUST-01","TRUST-02","TRUST-03","TRUST-04","TRUST-05","TRUST-06","TRUST-07","TRUST-08","SEARCH-01","SEARCH-02","SEARCH-03","SEARCH-04","SEARCH-05","A11Y-01","A11Y-02","A11Y-03","A11Y-04","A11Y-05","MOB-01","MOB-02","MOB-03","MOB-04","PERF-01","PERF-02","PERF-03"],
+      "evidenceRequirements": ["page_url", "journey", "source_screenshot", "annotated_screenshot", "capture_timestamp", "viewport"],
+      "reportSections": ["cover", "snapshot", "scope", "methodology", "scorecard", "roadmap", "findings", "conclusion"]
+    },
+    {
+      "id": "ecommerce-v1",
+      "name": "E-commerce",
+      "description": "Product discovery, evaluation, cart, checkout, trust, and recovery.",
+      "productType": "ecommerce",
+      "defaultBundle": "full_website",
+      "journeys": ["Discover a product", "Evaluate product details", "Add to cart", "Complete checkout", "Manage order or get support"],
+      "checkpointIds": ["TO-01","TO-02","TO-03","TO-04","TO-05","TO-06","TO-07","TO-08","TO-09","TO-10","TO-11","TO-12","TO-13","TO-14","TO-15","TO-16","TO-17","TO-18","NAV-01","NAV-02","NAV-03","NAV-04","NAV-05","NAV-06","NAV-07","NAV-08","FORM-01","FORM-02","FORM-03","FORM-04","FORM-05","FORM-06","FORM-07","FORM-08","FORM-09","FORM-10","SEARCH-01","SEARCH-02","SEARCH-03","SEARCH-04","SEARCH-05","SEARCH-06","SEARCH-07","SEARCH-08","TRUST-01","TRUST-02","TRUST-03","TRUST-04","TRUST-05","TRUST-06","HELP-01","HELP-02","HELP-03","HELP-04","HELP-05","HELP-06","HELP-07","HELP-08","A11Y-01","A11Y-02","A11Y-03","A11Y-04","A11Y-05","MOB-01","MOB-02","MOB-03","MOB-04","PERF-01","PERF-02","PERF-03","PRIV-01","PRIV-02","BUG-01","BUG-02"],
+      "evidenceRequirements": ["page_url", "journey", "source_screenshot", "annotated_screenshot", "capture_timestamp", "viewport"],
+      "reportSections": ["cover", "snapshot", "scope", "methodology", "scorecard", "roadmap", "findings", "conclusion"]
+    },
+    {
+      "id": "saas-digital-product-v1",
+      "name": "SaaS / Digital Product",
+      "description": "Evaluation, signup, onboarding, core-task completion, and support.",
+      "productType": "saas_digital_product",
+      "defaultBundle": "selected_pages",
+      "journeys": ["Understand value and pricing", "Create an account", "Complete onboarding", "Perform the core task", "Recover or request support"],
+      "checkpointIds": ["TO-01","TO-02","TO-03","TO-04","TO-05","TO-06","TO-07","TO-08","TO-09","TO-10","TO-11","TO-12","TO-13","TO-14","TO-15","TO-16","NAV-01","NAV-02","NAV-03","NAV-04","NAV-05","NAV-06","NAV-07","NAV-08","FORM-01","FORM-02","FORM-03","FORM-04","FORM-05","FORM-06","FORM-07","FORM-08","FORM-09","FORM-10","HELP-01","HELP-02","HELP-03","HELP-04","HELP-05","HELP-06","HELP-07","HELP-08","TRUST-01","TRUST-02","TRUST-03","TRUST-04","TRUST-05","TRUST-06","CONTENT-01","CONTENT-02","CONTENT-03","CONTENT-04","CONTENT-05","A11Y-01","A11Y-02","A11Y-03","A11Y-04","A11Y-05","MOB-01","MOB-02","MOB-03","MOB-04","PERF-01","PERF-02","PERF-03","PRIV-01","PRIV-02","BUG-01","BUG-02"],
+      "evidenceRequirements": ["page_url", "journey", "source_screenshot", "annotated_screenshot", "capture_timestamp", "viewport"],
+      "reportSections": ["cover", "snapshot", "scope", "methodology", "scorecard", "roadmap", "findings", "conclusion"]
+    },
+    {
+      "id": "content-publisher-v1",
+      "name": "Content / Publisher",
+      "description": "Topic discovery, taxonomy, reading, related content, and search.",
+      "productType": "content_publisher",
+      "defaultBundle": "general_health_check",
+      "journeys": ["Discover a topic", "Navigate categories", "Read and understand content", "Find related content", "Search, subscribe, or share"],
+      "checkpointIds": ["HP-01","HP-02","HP-04","HP-05","HP-06","HP-07","HP-09","HP-11","HP-12","HP-15","NAV-01","NAV-02","NAV-03","NAV-04","NAV-05","NAV-06","NAV-07","NAV-08","NAV-09","NAV-10","CONTENT-01","CONTENT-02","CONTENT-03","CONTENT-04","CONTENT-05","CONTENT-06","CONTENT-07","CONTENT-08","CONTENT-09","CONTENT-10","CONTENT-11","CONTENT-12","CONTENT-13","CONTENT-14","CONTENT-15","SEARCH-01","SEARCH-02","SEARCH-03","SEARCH-04","SEARCH-05","SEARCH-06","SEARCH-07","SEARCH-08","SEARCH-09","SEARCH-10","TRUST-01","TRUST-02","TRUST-03","TRUST-04","TRUST-05","A11Y-01","A11Y-02","A11Y-03","A11Y-04","A11Y-05","MOB-01","MOB-02","MOB-03","MOB-04","PERF-01","PERF-02","PERF-03"],
+      "evidenceRequirements": ["page_url", "journey", "source_screenshot", "annotated_screenshot", "capture_timestamp", "viewport"],
+      "reportSections": ["cover", "snapshot", "scope", "methodology", "scorecard", "roadmap", "findings", "conclusion"]
+    }
+  ]
+}

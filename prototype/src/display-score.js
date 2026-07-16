@@ -1,5 +1,6 @@
-export function displayScore(audit, derivedScore) {
+export function displayScore(audit, derivedScore, assessedCount = null) {
   const persisted = audit?.assessmentSummary?.score;
+  if (audit?.templateId && assessedCount === 0 && !Number.isFinite(persisted)) return null;
   return Number.isFinite(persisted) ? persisted : derivedScore;
 }
 

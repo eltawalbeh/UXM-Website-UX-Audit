@@ -10,6 +10,10 @@ test('prototype falls back to derived score when no persisted summary exists', (
   assert.equal(displayScore({}, 67), 67);
 });
 
+test('template baseline remains unscored until at least one checkpoint is assessed', () => {
+  assert.equal(displayScore({ templateId: 'government-civic-v1' }, 0, 0), null);
+});
+
 test('object audit scope renders the included public scope without object leakage', () => {
   assert.equal(scopeSummary({ scope: { included: ['Public form', 'Navigation'] } }), 'Public form · Navigation');
 });

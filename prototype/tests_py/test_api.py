@@ -221,6 +221,43 @@ class ApiServerTests(unittest.TestCase):
         _, projects = self.get_json(f"/api/projects?clientId={client['id']}")
         self.assertEqual(clients[0]["auditCount"], 1)
         self.assertEqual(projects[0]["auditCount"], 1)
+    def test_template_api_creates_a_clean_project_linked_audit(self):
+        status, templates = self.get_json("/api/audit-templates")
+        self.assertEqual(status, 200)
+        government = next(item for item in templates if item["id"] == "government-civic-v1")
+        client = self.repo.create_client({"name": "Template Client"})
+        project = self.repo.create_project({"clientId": client["id"], "name": "Service Portal", "baseUrl": "https://service.example.gov/", "productType": "government_civic"})
+
+        status, audit = self.request(
+            f"/api/projects/{project['id']}/audits/from-template",
+            json.dumps({"templateId": government["id"], "title": "Service Portal Baseline"}).encode(),
+        )
+
+        self.assertEqual(status, 201)
+        self.assertEqual(audit["projectId"], project["id"])
+        self.assertEqual(audit["templateId"], government["id"])
+        self.assertEqual(audit["url"], project["baseUrl"])
+        self.assertEqual(audit["source"], f"template:{government['id']}")
+        self.assertEqual(set(audit["assessments"]), set(government["checkpointIds"]))
+        self.assertEqual(set(audit["assessments"].values()), {"not_verified"})
+        self.assertEqual(audit["findings"], [])
+        self.assertEqual(audit["journeys"], government["journeys"])
+        self.assertEqual(audit["scope"]["bundle"], government["defaultBundle"])
+        self.assertEqual(self.repo.list_projects(client["id"])[0]["auditCount"], 1)
+
+    def test_template_creation_rejects_unknown_template_without_creating_an_audit(self):
+        client = self.repo.create_client({"name": "Unknown Template Client"})
+        project = self.repo.create_project({"clientId": client["id"], "name": "Portal", "baseUrl": "https://example.com"})
+        before = len(self.repo.list_audits())
+        with self.assertRaises(HTTPError) as raised:
+            self.request(
+                f"/api/projects/{project['id']}/audits/from-template",
+                json.dumps({"templateId": "not-real"}).encode(),
+            )
+        self.assertEqual(raised.exception.code, 404)
+        body = json.load(raised.exception)
+        self.assertIn("template", body["error"].lower())
+        self.assertEqual(len(self.repo.list_audits()), before)
 
 
 if __name__ == "__main__":

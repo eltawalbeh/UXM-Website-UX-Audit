@@ -97,6 +97,19 @@ test('renderReport keeps the client report CTA and finding markup inside the bou
   assert.doesNotMatch(html, /Preview report|Create backup/);
 });
 
+test('template audit report supports object assessments and remains not scored before review', () => {
+  const html = renderReport({
+    id: 'audit_template', client: 'Template Client', url: 'https://example.com', templateId: 'corporate-marketing-v1',
+    scope: { included: ['Template baseline'] },
+    assessments: { 'HP-01': 'not_verified', 'NAV-01': 'not_verified', 'A11Y-01': 'not_verified' },
+    findings: [],
+  }, 'en');
+
+  assert.match(html, /Not scored/);
+  assert.match(html, /0 \/ 3/);
+  assert.doesNotMatch(html, />0<small>\/100<\/small>/);
+});
+
 test('renderReport creates a native RTL Arabic report and isolates technical tokens LTR', () => {
   const html = renderReport(audit, 'ar');
 

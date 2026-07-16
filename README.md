@@ -37,6 +37,14 @@ It supports client and project creation, project search, product type and owner 
 
 The current browser surfaces are functional workflow prototypes. A separate final UX-polish phase will replace the visual and interaction design before final acceptance.
 
+## Audit templates
+
+Open <http://127.0.0.1:4173/templates.html> or use **Templates** from the workspace or operations header.
+
+The versioned catalog in `data/audit-templates.v1.json` contains five reusable baselines: Government / Civic Service, Corporate / Marketing, E-commerce, SaaS / Digital Product, and Content / Publisher. Each template defines a product type, default scope bundle, journeys, official UXM checkpoint IDs, evidence requirements, and report sections.
+
+Creating from a template persists a new audit under the selected project. Every selected checkpoint begins as `not_verified`; findings, scores, evidence, and AI output are never fabricated. A new template audit remains **Not scored** until at least one applicable checkpoint is assessed.
+
 ## Tests
 
 Run the Python suite from `prototype`:

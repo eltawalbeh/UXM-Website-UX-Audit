@@ -6,12 +6,14 @@ import mimetypes
 import re
 import shutil
 import subprocess
+import uuid
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from backend.audit_copilot import build_context, configured_drafter
+from backend.audit_templates import get_audit_template, load_audit_templates
 from backend.ai_first_pass import build_first_pass_context, configured_first_pass_drafter, detect_product_type, explore_public_pages, finalize_scope, safe_public_url, scope_request
 from backend.storage import AuditRepository
 
@@ -50,6 +52,9 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             if path == "/api/projects":
                 client_id = parse_qs(urlparse(self.path).query).get("clientId", [None])[0]
                 self._json(200, repository.list_projects(client_id))
+                return
+            if path == "/api/audit-templates":
+                self._json(200, load_audit_templates())
                 return
             if path == "/api/audits":
                 self._json(200, repository.list_audits())
@@ -90,6 +95,10 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
                     self._json(404, {"error": str(error)})
                 except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
                     self._json(400, {"error": str(error)})
+                return
+            template_match = re.fullmatch(r"/api/projects/([^/]+)/audits/from-template", path)
+            if template_match:
+                self._create_from_template(template_match.group(1))
                 return
             status_match = re.fullmatch(r"/api/projects/([^/]+)/status", path)
             if status_match:
@@ -141,6 +150,51 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             repository.upsert_audit(audit)
             summary = next(item for item in repository.list_audits() if item["id"] == audit["id"])
             self._json(201, summary)
+
+        def _create_from_template(self, project_id: str):
+            project = repository.get_project(project_id)
+            if project is None:
+                self._json(404, {"error": "Project not found"})
+                return
+            try:
+                request_data = self._request_json()
+                template_id = str(request_data.get("templateId", "")).strip()
+                template = get_audit_template(template_id)
+                if template is None:
+                    self._json(404, {"error": "Audit template not found"})
+                    return
+                target_url = str(request_data.get("url") or project["baseUrl"]).strip()
+                if not target_url.startswith(("http://", "https://")):
+                    raise ValueError("Audit URL must start with http:// or https://")
+            except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+                self._json(400, {"error": str(error)})
+                return
+            audit = {
+                "id": f"audit_{uuid.uuid4().hex[:16]}",
+                "client": project["clientName"],
+                "website": str(request_data.get("title") or project["name"]).strip(),
+                "url": target_url,
+                "locale": str(request_data.get("locale") or "en"),
+                "source": f"template:{template['id']}",
+                "projectId": project["id"],
+                "templateId": template["id"],
+                "templateVersion": "1.0.0",
+                "productType": template["productType"],
+                "scope": {
+                    "productType": template["productType"],
+                    "bundle": template["defaultBundle"],
+                    "templateId": template["id"],
+                    "checkpointCount": len(template["checkpointIds"]),
+                },
+                "journeys": list(template["journeys"]),
+                "assessments": {checkpoint_id: "not_verified" for checkpoint_id in template["checkpointIds"]},
+                "findings": [],
+                "evidenceRequirements": list(template["evidenceRequirements"]),
+                "reportSections": list(template["reportSections"]),
+                "status": "draft",
+            }
+            repository.upsert_audit(audit)
+            self._json(201, repository.get_audit(audit["id"]))
 
         def _draft_with_ai(self, audit_id: str):
             audit = repository.get_audit(audit_id)

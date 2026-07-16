@@ -55,7 +55,7 @@ function render() {
   const query = state.query.trim().toLowerCase();
   const visibleProjects = state.projects.filter(project => !query || `${project.name} ${project.clientName} ${project.baseUrl}`.toLowerCase().includes(query));
   root.className = '';
-  root.innerHTML = `<div class="shell"><header class="top"><a class="brand" href="/" aria-label="UXM Audit">UXM<span>Audit</span></a><div class="top-actions"><a class="button alt" href="/">Audit workspace</a></div></header><main class="operations-main">
+  root.innerHTML = `<div class="shell"><header class="top"><a class="brand" href="/" aria-label="UXM Audit">UXM<span>Audit</span></a><div class="top-actions"><a class="button alt" href="/templates.html">Templates</a><a class="button alt" href="/">Audit workspace</a></div></header><main class="operations-main">
     <div class="eyebrow">Internal operations</div><h1>Client & project operations</h1><p class="sub">Organize clients, projects, lifecycle status, and linked audits without changing client-facing reports.</p>
     ${state.error ? `<div class="notice publication-blocked">${escapeHtml(state.error)}</div>` : ''}${state.message ? `<div class="notice">${escapeHtml(state.message)}</div>` : ''}
     <section class="metrics"><div class="metric"><b>${state.clients.length}</b><span>Clients</span></div><div class="metric"><b>${state.projects.length}</b><span>Projects</span></div><div class="metric"><b>${assigned}/${state.audits.length}</b><span>Audits linked</span></div></section>
