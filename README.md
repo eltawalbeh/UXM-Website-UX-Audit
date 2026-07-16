@@ -6,7 +6,7 @@ A local, evidence-led UX audit workspace. The repository contains the committed 
 
 **Prerequisites:** Python 3.11+ and Node.js 18+ (for the browser-facing test suite).
 
-On Windows, double-click [`prototype/START-UXM-AUDIT.bat`](prototype/START-UXM-AUDIT.bat). It creates `prototype/.venv`, installs `prototype/requirements.txt`, creates or updates `prototype/data/uxm-audit.db` from the two committed pilot JSON files, opens the browser, then starts the local server.
+On Windows, double-click [`prototype/START-UXM-AUDIT.bat`](prototype/START-UXM-AUDIT.bat). It creates `prototype/.venv`, installs `prototype/requirements.txt`, creates or updates `prototype/data/uxm-audit.db` from the committed pilot JSON files, opens the browser, then starts the local server.
 
 The Python requirements file is intentionally standard-library-only. To bootstrap without starting the server:
 
@@ -22,6 +22,20 @@ python -m backend.api_server
 ```
 
 Open <http://127.0.0.1:4173>.
+
+## Client and project operations
+
+Open <http://127.0.0.1:4173/operations.html> or use **Operations** in the audit workspace header.
+
+The operations workspace persists this hierarchy in local SQLite:
+
+```text
+Client → Project → Linked audits
+```
+
+It supports client and project creation, project search, product type and owner metadata, audit linking, and the project lifecycle states `Draft`, `In review`, `Evidence complete`, `Ready for client`, and `Delivered`. Existing unlinked pilot audits are migrated into client/project records idempotently when the server starts.
+
+The current browser surfaces are functional workflow prototypes. A separate final UX-polish phase will replace the visual and interaction design before final acceptance.
 
 ## Tests
 

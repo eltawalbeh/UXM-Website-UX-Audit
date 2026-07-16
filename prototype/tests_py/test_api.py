@@ -205,6 +205,22 @@ class ApiServerTests(unittest.TestCase):
 
         self.assertEqual(response.status, 200)
         self.assertIn("UXM Audit", body)
+    def test_client_project_management_api_creates_links_and_updates_status(self):
+        status, client = self.request("/api/clients", json.dumps({"name": "API Client", "contactName": "Lina"}).encode("utf-8"), {"Content-Type": "application/json"})
+        self.assertEqual(status, 201)
+        status, project = self.request("/api/projects", json.dumps({"clientId": client["id"], "name": "Website", "baseUrl": "https://example.com", "owner": "Abdullah"}).encode("utf-8"), {"Content-Type": "application/json"})
+        self.assertEqual(status, 201)
+
+        status, linked = self.request(f"/api/projects/{project['id']}/audits/pilot_demo", b"{}", {"Content-Type": "application/json"})
+        self.assertEqual(status, 200)
+        self.assertEqual(linked["projectId"], project["id"])
+        status, updated = self.request(f"/api/projects/{project['id']}/status", json.dumps({"status": "ready_for_client"}).encode("utf-8"), {"Content-Type": "application/json"})
+        self.assertEqual(updated["status"], "ready_for_client")
+
+        _, clients = self.get_json("/api/clients")
+        _, projects = self.get_json(f"/api/projects?clientId={client['id']}")
+        self.assertEqual(clients[0]["auditCount"], 1)
+        self.assertEqual(projects[0]["auditCount"], 1)
 
 
 if __name__ == "__main__":

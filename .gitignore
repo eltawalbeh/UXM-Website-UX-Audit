@@ -19,6 +19,7 @@ prototype/chrome-layout-profile/
 
 # Hermes-local and OS files
 .hermes/desktop-attachments/
+.hermes/plans/
 .notion_tmp_rename/
 .analysis/chrome-evidence-profile/
 .analysis/ammancity-search-malaab.txt

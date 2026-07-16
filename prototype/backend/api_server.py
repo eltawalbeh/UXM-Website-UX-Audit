@@ -39,10 +39,18 @@ def chrome_pdf_exporter(base_url: str):
 
 def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: int = 4173, pdf_exporter=None, ai_drafter=None, ai_first_pass_explorer=None, ai_first_pass_drafter=None):
     static_root = Path(static_root).resolve()
+    repository.backfill_operations_from_audits()
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             path = urlparse(self.path).path
+            if path == "/api/clients":
+                self._json(200, repository.list_clients())
+                return
+            if path == "/api/projects":
+                client_id = parse_qs(urlparse(self.path).query).get("clientId", [None])[0]
+                self._json(200, repository.list_projects(client_id))
+                return
             if path == "/api/audits":
                 self._json(200, repository.list_audits())
                 return
@@ -68,6 +76,36 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             if path == "/api/backups":
                 backup = repository.backup()
                 self._json(201, {"path": str(backup)})
+                return
+            if path == "/api/clients":
+                try:
+                    self._json(201, repository.create_client(self._request_json()))
+                except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
+                    self._json(400, {"error": str(error)})
+                return
+            if path == "/api/projects":
+                try:
+                    self._json(201, repository.create_project(self._request_json()))
+                except LookupError as error:
+                    self._json(404, {"error": str(error)})
+                except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
+                    self._json(400, {"error": str(error)})
+                return
+            status_match = re.fullmatch(r"/api/projects/([^/]+)/status", path)
+            if status_match:
+                try:
+                    self._json(200, repository.update_project_status(status_match.group(1), self._request_json().get("status")))
+                except LookupError as error:
+                    self._json(404, {"error": str(error)})
+                except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
+                    self._json(400, {"error": str(error)})
+                return
+            link_match = re.fullmatch(r"/api/projects/([^/]+)/audits/([^/]+)", path)
+            if link_match:
+                try:
+                    self._json(200, repository.link_audit_to_project(link_match.group(2), link_match.group(1)))
+                except LookupError as error:
+                    self._json(404, {"error": str(error)})
                 return
             export_match = re.fullmatch(r"/api/audits/([^/]+)/export-pdf", path)
             if export_match:
