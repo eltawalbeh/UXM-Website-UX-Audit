@@ -7,6 +7,7 @@ import json
 import os
 import re
 import socket
+from pathlib import Path
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from urllib.error import HTTPError, URLError
@@ -23,7 +24,7 @@ PRODUCT_TYPES = {
     "corporate_marketing": "Corporate / marketing website", "content_publisher": "Content / publisher", "custom": "Custom",
 }
 BUNDLES = {
-    "full_website": ("Full website", 160), "selected_pages": ("Selected pages", 72),
+    "full_website": ("Full website", 272), "selected_pages": ("Selected pages", 72),
     "general_health_check": ("General health check", 48), "contact_experience": ("Contact experience", 42),
 }
 REQUIRED_CANDIDATE_FIELDS = ("id", "pageUrl", "pageName", "journey", "checkpointId", "reviewState", "duplicateRisk", "title", "observation", "impact", "recommendation", "suggestedSeverity", "confidence", "reasons", "evidenceRefs", "evidenceGaps")
@@ -139,24 +140,121 @@ def finalize_scope(exploration: dict, request_scope: dict) -> dict:
     return scope
 
 
+def load_checkpoint_library() -> list[dict]:
+    path = Path(__file__).resolve().parents[2] / "data" / "uxm-checkpoints.v1.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    checkpoints = payload.get("checkpoints", [])
+    if len(checkpoints) != 272:
+        raise RuntimeError("UXM First Pass requires the complete 272-checkpoint library")
+    return checkpoints
+
+
+def select_checkpoint_library(scope: dict) -> list[dict]:
+    checkpoints = load_checkpoint_library()
+    limit = min(int(scope.get("checkpointCount") or 272), 272)
+    if limit == 272:
+        return checkpoints
+    preferred_by_bundle = {
+        "general_health_check": {
+            "Homepage & First Impression", "Navigation & Information Architecture", "Content & Microcopy",
+            "Interface & Visual Design", "Trust, Credibility & Transparency", "Accessibility",
+            "Mobile & Responsive", "Performance & Perceived Performance", "Technical Reliability",
+        },
+        "contact_experience": {
+            "Navigation & Information Architecture", "Forms & Data Entry", "Trust, Credibility & Transparency",
+            "Content & Microcopy", "Feedback, Recovery & Error Tolerance", "Accessibility", "Privacy & Consent",
+        },
+        "selected_pages": set(),
+    }
+    preferred = preferred_by_bundle.get(scope.get("bundle"), set())
+    ranked = sorted(checkpoints, key=lambda item: (
+        0 if not preferred or item.get("section") in preferred else 1,
+        0 if item.get("level") == "core" else 1,
+        item.get("id", ""),
+    ))
+    return ranked[:limit]
+
+
 def build_first_pass_context(audit: dict, scope: dict) -> dict:
-    return {"auditId":audit.get("id"),"auditScope":audit.get("scope",""),"requestedUrl":scope.get("requestedUrl"),"pages":scope.get("visited",[]),"scopeContract":{key:scope.get(key) for key in ("productType","productTypeLabel","bundle","bundleLabel","includedUrls","includedJourneys","checkpointCount","exclusions","candidateRule")},"existingFindings":[{"id":item.get("id"),"title":item.get("title","")} for item in audit.get("findings",[])]}
+    checkpoint_library = [{
+        "id": item["id"], "title": item["title"], "section": item.get("section", ""),
+        "category": item.get("category", ""), "level": item.get("level", ""),
+        "journeys": item.get("journeys", []), "applicableWhen": item.get("applicableWhen", []),
+    } for item in select_checkpoint_library(scope)]
+    return {"auditId":audit.get("id"),"auditScope":audit.get("scope",""),"requestedUrl":scope.get("requestedUrl"),"pages":scope.get("visited",[]),"scopeContract":{key:scope.get(key) for key in ("productType","productTypeLabel","bundle","bundleLabel","includedUrls","includedJourneys","checkpointCount","exclusions","candidateRule")},"checkpointLibrary":checkpoint_library,"existingFindings":[{"id":item.get("id"),"title":item.get("title","")} for item in audit.get("findings",[])]}
 
 
-def _valid_candidates(candidates: object, scope: dict) -> bool:
-    visited={page.get("url") for page in scope.get("visited",[])}; allowed_prefixes=("NAV-","FORM-","A11Y-","CONV-","CONT-","SUP-")
-    return isinstance(candidates,list) and all(isinstance(item,dict) and all(field in item for field in REQUIRED_CANDIDATE_FIELDS) and item.get("suggestedSeverity") in {"critical","high","medium","low"} and item.get("confidence") in {"high","medium","low"} and item.get("reviewState") == "Awaiting review" and isinstance(item.get("reasons"),list) and isinstance(item.get("evidenceRefs"),list) and isinstance(item.get("evidenceGaps"),list) and item.get("pageUrl") in visited and set(item["evidenceRefs"]).issubset(visited) and str(item.get("checkpointId","")).startswith(allowed_prefixes) for item in candidates)
+def normalize_provider_candidates(candidates: object, visited_urls: set[str], allowed_checkpoint_ids: set[str]) -> list[dict]:
+    if not isinstance(candidates, list):
+        return []
+    normalized = []
+    for index, raw in enumerate(candidates, start=1):
+        if not isinstance(raw, dict):
+            continue
+        item = dict(raw)
+        if not re.fullmatch(r"AIFP-\d{3}", str(item.get("id", ""))):
+            item["id"] = f"AIFP-{index:03d}"
+        item["checkpointId"] = item.get("checkpointId") or item.get("applicableCheckpointId", "")
+        item["suggestedSeverity"] = str(item.get("suggestedSeverity", "")).lower()
+        item["confidence"] = str(item.get("confidence", "")).lower()
+        duplicate = item.get("duplicateRisk")
+        if isinstance(duplicate, dict):
+            duplicate = duplicate.get("level", "unknown")
+        item["duplicateRisk"] = str(duplicate or "unknown").lower()
+        refs = item.get("evidenceRefs", [])
+        if isinstance(refs, str):
+            refs = [refs]
+        if isinstance(refs, list):
+            refs = [ref.get("url") if isinstance(ref, dict) else ref for ref in refs]
+        item["evidenceRefs"] = [ref for ref in refs if isinstance(ref, str)] if isinstance(refs, list) else []
+        if isinstance(item.get("reasons"), str):
+            item["reasons"] = [item["reasons"]]
+        if isinstance(item.get("evidenceGaps"), str):
+            item["evidenceGaps"] = [item["evidenceGaps"]]
+        valid = (
+            all(field in item for field in REQUIRED_CANDIDATE_FIELDS)
+            and item["suggestedSeverity"] in {"critical", "high", "medium", "low"}
+            and item["confidence"] in {"high", "medium", "low"}
+            and item.get("reviewState") == "Awaiting review"
+            and isinstance(item.get("reasons"), list)
+            and isinstance(item.get("evidenceGaps"), list)
+            and item.get("pageUrl") in visited_urls
+            and bool(item["evidenceRefs"])
+            and set(item["evidenceRefs"]).issubset(visited_urls)
+            and item.get("checkpointId") in allowed_checkpoint_ids
+        )
+        if valid:
+            normalized.append(item)
+    return normalized
 
 
 def configured_first_pass_drafter(context: dict) -> dict:
     endpoint=os.getenv("UXM_AI_ENDPOINT","").strip(); api_key=os.getenv("UXM_AI_API_KEY","").strip(); model=os.getenv("UXM_AI_MODEL","").strip()
     if not endpoint or not model: return {"status":"unavailable","message":"AI connection unavailable. Configure UXM_AI_ENDPOINT and UXM_AI_MODEL; no candidates were generated."}
-    instructions="Generate only preliminary evidence-linked UX candidates using supplied public captures and scope contract. Return JSON {candidates:[...]}. Every candidate needs id (AIFP-NNN), pageUrl, pageName, journey, applicable checkpointId, evidenceRefs, observation, impact, recommendation, suggestedSeverity, confidence, evidenceGaps, duplicateRisk, reasons, and reviewState exactly Awaiting review. Do not invent evidence, submit forms, authenticate, or claim private coverage. Use only applicable checkpoints and URLs in the scope contract."
-    payload={"model":model,"messages":[{"role":"system","content":instructions},{"role":"user","content":json.dumps(context,ensure_ascii=False)}],"response_format":{"type":"json_object"},"max_tokens":2200}; headers={"Content-Type":"application/json"}
+    instructions=(
+        "Generate only preliminary evidence-linked UX candidates from the supplied public captures and scope contract. "
+        "Evaluate applicability against the supplied checkpointLibrary, which is the complete UXM 272-checkpoint source. "
+        "Return JSON only as {\"candidates\":[...]}. Every candidate must contain exactly: id (AIFP-NNN), "
+        "pageUrl, pageName, journey, checkpointId, evidenceRefs (array of visited URL strings), title, observation, impact, "
+        "recommendation, suggestedSeverity (critical|high|medium|low), confidence (high|medium|low), evidenceGaps (array), "
+        "duplicateRisk (none|possible|likely), reasons (array), and reviewState exactly \"Awaiting review\". "
+        "checkpointId MUST exactly match an id in checkpointLibrary; never create CK-, UX-CKP-, or other IDs. "
+        "Return at most 8 highest-confidence, non-duplicate candidates so the JSON always completes within the response budget. "
+        "Do not invent evidence, submit forms, authenticate, or claim private coverage. If no issue is supported, return an empty candidates array."
+    )
+
+    payload={"model":model,"messages":[{"role":"system","content":instructions},{"role":"user","content":json.dumps(context,ensure_ascii=False)}],"response_format":{"type":"json_object"},"max_tokens":6500}
+    headers={"Content-Type":"application/json"}
     if api_key: headers["Authorization"]=f"Bearer {api_key}"
     try:
-        with __import__("urllib.request",fromlist=["urlopen"]).urlopen(Request(endpoint,data=json.dumps(payload).encode("utf-8"),headers=headers,method="POST"),timeout=90) as response: body=json.load(response)
+        with __import__("urllib.request",fromlist=["urlopen"]).urlopen(Request(endpoint,data=json.dumps(payload).encode("utf-8"),headers=headers,method="POST"),timeout=180) as response: body=json.load(response)
     except (HTTPError,URLError,TimeoutError,json.JSONDecodeError,OSError) as error: return {"status":"unavailable","message":f"AI connection unavailable ({error}); no candidates were generated."}
-    candidates=(_extract_draft(body if isinstance(body,dict) else {}) or {}).get("candidates")
-    if not _valid_candidates(candidates,{"visited":context.get("pages",[])}): return {"status":"unavailable","message":"The configured provider did not return evidence-linked, in-scope candidates; no candidates were generated."}
+    raw_candidates=(_extract_draft(body if isinstance(body,dict) else {}) or {}).get("candidates")
+    if not isinstance(raw_candidates, list):
+        return {"status":"unavailable","message":"The configured provider did not return a candidate list; no candidates were generated."}
+    visited_urls={page.get("url") for page in context.get("pages",[]) if page.get("url")}
+    allowed_ids={item.get("id") for item in context.get("checkpointLibrary",[]) if item.get("id")}
+    candidates=normalize_provider_candidates(raw_candidates, visited_urls, allowed_ids)
+    if raw_candidates and not candidates:
+        return {"status":"unavailable","message":"The provider returned candidates, but none matched both visited evidence and the official 272-checkpoint library; no candidates were accepted."}
     return {"status":"ready","candidates":candidates}
