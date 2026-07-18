@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UXM Design System Foundation</title>
+  <link rel="stylesheet" href="src/ui/tokens.css">
+  <link rel="stylesheet" href="src/ui/base.css">
+  <link rel="stylesheet" href="src/ui/components.css">
+  <style>
+    body { padding: clamp(1rem, 4vw, 3rem); }
+    .specimen { width: min(100%, 1160px); margin-inline: auto; }
+    .specimen__head { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-block-end: 2rem; }
+    .specimen__head h1 { margin: 0; font-size: clamp(2rem, 5vw, 4rem); line-height: 1; }
+    .specimen__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .specimen__stack { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+    .specimen__swatches { display: grid; grid-template-columns: repeat(9, 1fr); overflow: hidden; border: 1px solid var(--figma-border-subtle); border-radius: var(--figma-radius-12); }
+    .specimen__swatches span { min-height: 4rem; }
+    .specimen__rtl { margin-block-start: 1rem; }
+    @media (max-width: 760px) { .specimen__grid { grid-template-columns: 1fr; } .specimen__head { align-items: start; flex-direction: column; } .specimen__swatches { grid-template-columns: repeat(3, 1fr); } }
+  </style>
+</head>
+<body>
+  <main class="specimen">
+    <header class="specimen__head">
+      <div><p>UX Mosaic · Evidence-led UX Audit System</p><h1 class="uxm-display">Design foundation</h1></div>
+      <span class="uxm-status" data-status="success">Foundation ready</span>
+    </header>
+
+    <div class="specimen__swatches" aria-label="Approved UXM palette">
+      <span style="background:var(--figma-color-navy-900)" title="Navy 900"></span><span style="background:var(--figma-color-navy-800)" title="Navy 800"></span><span style="background:var(--figma-color-blue-600)" title="Brand muted"></span><span style="background:var(--figma-color-blue-500)" title="Interactive"></span><span style="background:var(--figma-color-slate-500)" title="Slate"></span><span style="background:var(--figma-color-charcoal)" title="Charcoal"></span><span style="background:var(--figma-color-red-500)" title="Error"></span><span style="background:var(--figma-color-green-300)" title="Success"></span><span style="background:var(--figma-color-white)" title="White"></span>
+    </div>
+
+    <section class="specimen__grid" style="margin-block-start:1rem">
+      <article class="uxm-card uxm-card--outline">
+        <h2>Actions</h2>
+        <div class="specimen__stack">
+          <button class="uxm-button uxm-button--primary">Primary</button>
+          <button class="uxm-button uxm-button--secondary">Secondary</button>
+          <button class="uxm-button uxm-button--ghost">Ghost</button>
+          <button class="uxm-button uxm-button--success">Success</button>
+          <button class="uxm-button uxm-button--primary uxm-button--large">Large</button>
+        </div>
+      </article>
+
+      <article class="uxm-card uxm-card--elevated">
+        <h2>Badge variants</h2>
+        <div class="specimen__stack">
+          <span class="uxm-status" data-status="critical">Critical</span>
+          <span class="uxm-status" data-status="high">High</span>
+          <span class="uxm-status" data-status="medium">Medium</span>
+          <span class="uxm-status" data-status="low">Low</span>
+          <span class="uxm-status" data-status="info">Info</span>
+          <span class="uxm-status" data-status="success">Success</span>
+          <span class="uxm-status" data-status="warning">Warning</span>
+          <span class="uxm-status" data-status="neutral">Neutral</span>
+        </div>
+      </article>
+
+      <article class="uxm-card uxm-card--outline">
+        <h2>Input states</h2>
+        <label class="uxm-field">Default<input class="uxm-input" placeholder="Placeholder..."></label>
+        <label class="uxm-field" data-state="focused" style="margin-block-start:1rem">Focused<input class="uxm-input" value="Focused value"></label>
+        <label class="uxm-field" data-state="error" style="margin-block-start:1rem">Error<input class="uxm-input" value="Invalid value" aria-invalid="true"><span class="uxm-field__help">Error message</span></label>
+        <label class="uxm-field" data-state="disabled" style="margin-block-start:1rem">Disabled<input class="uxm-input" placeholder="Placeholder..." disabled></label>
+      </article>
+
+      <article class="uxm-card uxm-card--dark">
+        <h2>Tabs and table states</h2>
+        <div class="uxm-tabs" role="tablist" aria-label="Candidate states"><button class="uxm-tab" role="tab" aria-selected="true">Candidate</button><button class="uxm-tab" role="tab" aria-selected="false">Evidence</button><button class="uxm-tab" role="tab" aria-selected="false">Notes</button></div>
+        <div class="uxm-table-wrap" style="margin-block-start:1rem"><table class="uxm-table"><thead><tr><th>ID</th><th>Item</th><th>Status</th></tr></thead><tbody><tr aria-selected="true"><td data-technical>UXM-001</td><td>Evidence review</td><td><span class="uxm-status" data-status="medium">Active</span></td></tr><tr><td data-technical>UXM-002</td><td>Finding review</td><td><span class="uxm-status" data-status="neutral">Pending</span></td></tr></tbody></table></div>
+      </article>
+    </section>
+
+    <section class="uxm-review-panel specimen__rtl" dir="rtl" lang="ar">
+      <div class="uxm-review-panel__body">
+        <h2>نظام تصميم ثنائي اللغة</h2>
+        <p>الواجهة العربية تستخدم ترتيباً حقيقياً من اليمين إلى اليسار، بينما يبقى المعرّف <span class="technical-token">UXM-102</span> معزولاً تقنياً.</p>
+      </div>
+      <div class="uxm-sticky-actions"><button class="uxm-button uxm-button--ghost">رفض</button><button class="uxm-button uxm-button--primary">ترقية للمراجعة</button></div>
+    </section>
+  </main>
+</body>
+</html>

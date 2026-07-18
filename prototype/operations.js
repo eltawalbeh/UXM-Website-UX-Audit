@@ -45,7 +45,7 @@ function projectCard(project) {
     <div class="operation-card-head"><div><div class="eyebrow">${escapeHtml(project.clientName)}</div><h3>${escapeHtml(project.name)}</h3><a href="${escapeHtml(project.baseUrl)}" target="_blank" rel="noreferrer">${escapeHtml(project.baseUrl)}</a></div><span class="chip">${project.auditCount} audit${project.auditCount === 1 ? '' : 's'}</span></div>
     <div class="operation-meta"><span>${escapeHtml(productTypes[project.productType] || 'Product type not set')}</span><span>Owner: ${escapeHtml(project.owner || 'Unassigned')}</span></div>
     <label class="form-field">Project status<select class="form-select" data-project-status="${escapeHtml(project.id)}">${Object.entries(statusLabels).map(([value,label]) => `<option value="${value}" ${value === project.status ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
-    <div class="operation-audits"><b>Linked audits</b>${audits.length ? audits.map(audit => `<div class="row"><span>${escapeHtml(audit.id)} · ${audit.findingCount} findings</span><a class="button alt" href="/?audit=${encodeURIComponent(audit.id)}">Open audit</a></div>`).join('') : '<p class="muted">No audits linked yet.</p>'}</div>
+    <div class="operation-audits"><b>Linked audits</b>${audits.length ? audits.map(audit => `<div class="row"><span>${escapeHtml(audit.id)} · ${audit.findingCount} findings</span><a class="button alt" href="/workspace.html?audit=${encodeURIComponent(audit.id)}">Open audit</a></div>`).join('') : '<p class="muted">No audits linked yet.</p>'}</div>
     <div class="operation-link"><select class="form-select" data-audit-picker="${escapeHtml(project.id)}">${unlinkedAuditOptions()}</select><button class="button alt" type="button" data-link-audit="${escapeHtml(project.id)}">Link audit</button></div>
   </article>`;
 }
@@ -55,7 +55,7 @@ function render() {
   const query = state.query.trim().toLowerCase();
   const visibleProjects = state.projects.filter(project => !query || `${project.name} ${project.clientName} ${project.baseUrl}`.toLowerCase().includes(query));
   root.className = '';
-  root.innerHTML = `<div class="shell"><header class="top"><a class="brand" href="/" aria-label="UXM Audit">UXM<span>Audit</span></a><div class="top-actions"><a class="button alt" href="/templates.html">Templates</a><a class="button alt" href="/">Audit workspace</a></div></header><main class="operations-main">
+  root.innerHTML = `<div class="shell"><header class="top"><a class="brand" href="/workspace.html" aria-label="UXM Audit workspace">UXM<span>Audit</span></a><div class="top-actions"><a class="button alt" href="/templates.html">Templates</a><a class="button alt" href="/workspace.html">Audit workspace</a></div></header><main class="operations-main">
     <div class="eyebrow">Internal operations</div><h1>Client & project operations</h1><p class="sub">Organize clients, projects, lifecycle status, and linked audits without changing client-facing reports.</p>
     ${state.error ? `<div class="notice publication-blocked">${escapeHtml(state.error)}</div>` : ''}${state.message ? `<div class="notice">${escapeHtml(state.message)}</div>` : ''}
     <section class="metrics"><div class="metric"><b>${state.clients.length}</b><span>Clients</span></div><div class="metric"><b>${state.projects.length}</b><span>Projects</span></div><div class="metric"><b>${assigned}/${state.audits.length}</b><span>Audits linked</span></div></section>

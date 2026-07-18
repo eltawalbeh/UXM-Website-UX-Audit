@@ -45,5 +45,5 @@ if errorlevel 1 (
   exit /b 1
 )
 
-start "UXM Audit" http://127.0.0.1:4173
+start "UXM Audit" http://127.0.0.1:4173/workspace.html
 ".venv\Scripts\python.exe" -m backend.api_server

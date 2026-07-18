@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createStaticServer } from '../server.mjs';
 
-test('static server returns the prototype home page', async () => {
+test('static server returns the separated public landing page', async () => {
   const server = createStaticServer();
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const { port } = server.address();
@@ -12,7 +12,9 @@ test('static server returns the prototype home page', async () => {
   server.close();
 
   assert.equal(response.status, 200);
-  assert.match(html, /UXM Audit/);
+  assert.match(html, /data-surface="public"/);
+  assert.match(html, /UX Mosaic/);
+  assert.doesNotMatch(html, /src="app\.js"/);
 });
 
 test('workspace exposes evidence attachment and readiness-gated publication controls', async () => {

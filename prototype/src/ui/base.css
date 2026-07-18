@@ -1,0 +1,93 @@
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("../../assets/fonts/thmanyah-sans/thmanyahsans-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("../../assets/fonts/thmanyah-sans/thmanyahsans-Medium.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("../../assets/fonts/thmanyah-sans/thmanyahsans-Bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Thmanyah Sans";
+  src: url("../../assets/fonts/thmanyah-sans/thmanyahsans-Black.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--uxm-canvas);
+  color: var(--uxm-ink);
+  font-family: var(--uxm-font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  background: var(--uxm-canvas);
+  color: var(--uxm-ink);
+  font: 400 var(--uxm-type-body)/var(--uxm-leading-body) var(--uxm-font-ui);
+}
+
+button, input, select, textarea { font: inherit; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+img, svg { display: block; max-width: 100%; }
+
+h1, h2, h3, p { overflow-wrap: anywhere; }
+h1, h2, h3 { color: var(--uxm-ink); text-wrap: balance; }
+p { text-wrap: pretty; }
+.uxm-display { font-family: var(--uxm-font-display); font-size: var(--uxm-type-display); font-weight: 700; line-height: var(--uxm-leading-display); }
+[lang="ar"], [dir="rtl"] { font-family: var(--uxm-font-arabic); }
+
+a { color: var(--uxm-link); text-underline-offset: 0.18em; }
+a:hover { text-decoration-thickness: 0.12em; }
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--uxm-action-blue);
+  outline-offset: 3px;
+  box-shadow: var(--uxm-shadow-focus);
+}
+
+[hidden] { display: none !important; }
+[dir="rtl"] { text-align: start; }
+[dir="rtl"] :where(input[type="url"], input[type="email"], input[type="tel"], code, pre, .technical-token, [data-technical]) {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+[dir="rtl"] [data-icon-directional="true"] { transform: scaleX(-1); }
+
+.technical-token, [data-technical] {
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-family: var(--uxm-font-mono);
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

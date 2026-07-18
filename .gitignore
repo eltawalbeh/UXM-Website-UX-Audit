@@ -16,6 +16,13 @@ prototype/artifacts/
 **/.pytest_cache/
 **/*.pyc
 prototype/chrome-layout-profile/
+.analysis/
+
+# Generated design-review captures (source design and acceptance evidence remain tracked)
+design/reviews/figma-*/
+design/reviews/*metadata*.txt
+design/reviews/*-contact.jpg
+design/reviews/candidate-*.png
 
 # Hermes-local and OS files
 .hermes/desktop-attachments/

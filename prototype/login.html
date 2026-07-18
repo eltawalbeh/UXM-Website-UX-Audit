@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Operator login — UX Mosaic</title>
+  <link rel="stylesheet" href="src/ui/tokens.css">
+  <link rel="stylesheet" href="src/ui/base.css">
+  <link rel="stylesheet" href="src/ui/components.css">
+  <link rel="stylesheet" href="route-shell.css">
+</head>
+<body class="route-page" data-surface="login">
+  <header class="route-header route-shell">
+    <a class="route-brand" href="/" aria-label="UX Mosaic home"><img src="assets/brand/uxmosaic-horizontal-dark.png" alt="UX Mosaic"></a>
+    <a class="route-link" href="/">Back to website</a>
+  </header>
+  <main class="route-stage route-shell">
+    <section class="route-panel" aria-labelledby="login-title">
+      <p class="route-kicker">Operator system</p>
+      <h1 id="login-title">Operator login</h1>
+      <p class="route-panel__intro">Secure access for the UX Mosaic audit team.</p>
+      <form class="route-form" aria-describedby="login-status">
+        <label class="uxm-field"><span class="uxm-field__label">Work email</span><input class="uxm-input" type="email" autocomplete="username" disabled></label>
+        <label class="uxm-field"><span class="uxm-field__label">Password</span><input class="uxm-input" type="password" autocomplete="current-password" disabled></label>
+        <button class="uxm-button uxm-button--primary uxm-button--large" type="submit" disabled>Log in</button>
+        <p class="route-form-status" id="login-status">Authentication is not enabled in this development build. This route does not grant operator access yet.</p>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

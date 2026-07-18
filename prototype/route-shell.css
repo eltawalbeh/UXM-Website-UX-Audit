@@ -1,0 +1,67 @@
+body.route-page {
+  min-height: 100vh;
+  background: var(--figma-background-primary);
+}
+
+.route-shell {
+  width: min(100% - 40px, 1216px);
+  margin-inline: auto;
+}
+
+.route-header {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--figma-spacing-xs);
+  border-block-end: 1px solid var(--figma-border-subtle);
+}
+
+.route-brand { display: inline-flex; align-items: center; color: var(--figma-text-primary); text-decoration: none; }
+.route-brand img { width: 194px; height: auto; }
+.route-header__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--figma-spacing-3xs); }
+.route-link { color: var(--figma-text-secondary); font-size: var(--figma-type-scale-body-small); font-weight: 500; text-decoration: none; }
+.route-link:hover { color: var(--figma-brand-primary); }
+
+.route-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+  gap: clamp(40px, 8vw, 112px);
+  align-items: end;
+  min-height: 620px;
+  padding-block: clamp(64px, 10vw, 120px);
+}
+
+.route-kicker { margin: 0 0 var(--figma-spacing-xs); color: var(--figma-brand-primary-muted); font-size: var(--figma-type-scale-overline); font-weight: 700; letter-spacing: var(--figma-letter-spacing-wider); text-transform: uppercase; }
+.route-hero h1 { max-width: 900px; margin: 0; font-size: clamp(46px, 7vw, 86px); font-weight: 900; line-height: .95; letter-spacing: -1.5px; }
+.route-lede { max-width: 54ch; margin: var(--figma-spacing-md) 0 0; color: var(--figma-text-secondary); font-size: var(--figma-type-scale-body-large); line-height: var(--figma-line-height-body-large); }
+.route-actions { display: flex; flex-wrap: wrap; gap: var(--figma-spacing-2xs); margin-block-start: var(--figma-spacing-lg); }
+.route-actions .uxm-button { min-width: 0; }
+
+.route-principle { padding: var(--figma-spacing-lg); border-block-start: 4px solid var(--figma-brand-primary-muted); background: var(--figma-background-secondary); }
+.route-principle strong { display: block; margin-block-end: var(--figma-spacing-3xs); font-size: var(--figma-type-scale-heading-3); }
+.route-principle p { margin: 0; color: var(--figma-text-secondary); }
+.route-flow { display: grid; gap: var(--figma-spacing-xs); margin: 0; padding: 0; list-style: none; }
+.route-flow li { display: grid; grid-template-columns: 32px 1fr; gap: var(--figma-spacing-2xs); align-items: start; }
+.route-flow b { display: grid; width: 28px; height: 28px; place-items: center; border-radius: var(--figma-radius-full); background: var(--figma-background-dark); color: var(--figma-text-inverse); font-size: var(--figma-type-scale-overline); }
+.route-flow span { color: var(--figma-text-secondary); }
+
+.route-footer { display: flex; justify-content: space-between; gap: var(--figma-spacing-xs); padding-block: var(--figma-spacing-lg); border-block-start: 1px solid var(--figma-border-subtle); color: var(--figma-text-tertiary); font-size: var(--figma-type-scale-caption); }
+
+.route-stage { display: grid; min-height: calc(100vh - 89px); place-items: center; padding-block: clamp(48px, 8vw, 96px); }
+.route-panel { width: min(100%, 560px); padding: clamp(24px, 5vw, 48px); border: 1px solid var(--figma-border-subtle); border-radius: var(--figma-radius-12); background: var(--figma-background-primary); }
+.route-panel h1 { margin: 0; font-size: clamp(36px, 6vw, 54px); font-weight: 900; line-height: 1; }
+.route-panel__intro { margin-block: var(--figma-spacing-xs) var(--figma-spacing-lg); color: var(--figma-text-secondary); }
+.route-form { display: grid; gap: var(--figma-spacing-xs); }
+.route-form .uxm-field { width: 100%; max-width: none; }
+.route-form .uxm-button { width: 100%; }
+.route-form-status { margin: 0; padding: var(--figma-spacing-2xs); border-inline-start: 3px solid var(--figma-brand-primary-muted); background: var(--figma-background-secondary); color: var(--figma-text-secondary); font-size: var(--figma-type-scale-caption); }
+
+@media (max-width: 760px) {
+  .route-shell { width: min(100% - 32px, 1216px); }
+  .route-header { min-height: 72px; align-items: flex-start; padding-block: var(--figma-spacing-xs); }
+  .route-brand img { width: 160px; }
+  .route-hero { grid-template-columns: 1fr; min-height: auto; gap: var(--figma-spacing-xl-md); padding-block: 64px; }
+  .route-hero h1 { font-size: clamp(42px, 13vw, 64px); }
+  .route-footer { flex-direction: column; }
+}

@@ -1,71 +1,88 @@
 ---
 version: alpha
 name: UXM Audit
-license: Proprietary — UXM
-summary: Evidence-led editorial precision for bilingual website UX audits.
+license: Proprietary — UX Mosaic
+summary: A bilingual evidence-led UX audit operating system rooted in the UX Mosaic brand.
+implementationSource: UXM-Figma-Design-System-Source-of-Truth.md
 colors:
-  ink: "#16212B"
-  ink-muted: "#52616D"
-  canvas: "#F5F3EE"
-  surface: "#FFFEFB"
-  surface-subtle: "#ECEAE4"
-  line: "#D8D6CF"
-  accent: "#C84A35"
-  accent-strong: "#A93626"
-  accent-soft: "#FBE9E4"
-  link: "#1F5F8B"
-  severity-critical: "#A51D2D"
-  severity-high: "#B13D2A"
-  severity-medium: "#8A5C00"
-  severity-low: "#356C50"
-  severity-critical-soft: "#FDEBED"
-  severity-high-soft: "#FBE9E4"
-  severity-medium-soft: "#FFF3D6"
-  severity-low-soft: "#EAF5ED"
-  annotation: "#C8262D"
-  recommendation: "#245E4B"
+  midnight: "#1B1C2F"
+  midnight-secondary: "#262947"
+  charcoal: "#343936"
+  slate: "#607D8B"
+  blue: "#007AFF"
+  mint: "#A5F3B2"
+  mint-ink: "#155E27"
+  canvas: "#F7F7F7"
+  surface: "#FFFFFF"
+  surface-dark: "#262947"
+  surface-subtle: "#F5F5F5"
+  line: "#DCDCE0"
+  line-subtle: "#E8E8EB"
+  ink: "#1A1A1F"
+  ink-muted: "#607D8B"
+  link: "#007AFF"
+  logo-blue: "#4175B9"
+  critical: "#EF4444"
+  critical-soft: "#FFF2F2"
+  warning: "#FFBD2E"
+  warning-soft: "#FFF7EB"
+  success-soft: "#EDFCF0"
+  annotation: "#EF4444"
 typography:
   display:
-    fontFamily: "Manrope, IBM Plex Sans Arabic, Arial, sans-serif"
-    fontSize: "3rem"
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "40px"
     fontWeight: 700
-    lineHeight: 1.06
-    letterSpacing: "-0.035em"
-  heading-lg:
-    fontFamily: "Manrope, IBM Plex Sans Arabic, Arial, sans-serif"
-    fontSize: "2rem"
-    fontWeight: 700
-    lineHeight: 1.16
-    letterSpacing: "-0.025em"
-  heading-md:
-    fontFamily: "Manrope, IBM Plex Sans Arabic, Arial, sans-serif"
-    fontSize: "1.375rem"
-    fontWeight: 700
-    lineHeight: 1.25
-    letterSpacing: "-0.015em"
-  body-md:
-    fontFamily: "Manrope, IBM Plex Sans Arabic, Arial, sans-serif"
-    fontSize: "1rem"
-    fontWeight: 450
-    lineHeight: 1.6
-    letterSpacing: "0em"
-  body-sm:
-    fontFamily: "Manrope, IBM Plex Sans Arabic, Arial, sans-serif"
-    fontSize: "0.875rem"
+    lineHeight: "44px"
+  heading-1:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "28px"
+    fontWeight: 600
+    lineHeight: "31px"
+  heading-2:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "24px"
+    fontWeight: 600
+    lineHeight: "32px"
+  heading-3:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "20px"
     fontWeight: 500
-    lineHeight: 1.5
-    letterSpacing: "0em"
-  label:
-    fontFamily: "Manrope, IBM Plex Sans Arabic, Arial, sans-serif"
-    fontSize: "0.75rem"
-    fontWeight: 700
-    lineHeight: 1.3
-    letterSpacing: "0.06em"
+    lineHeight: "27px"
+  body-lg:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "18px"
+    fontWeight: 400
+    lineHeight: "28px"
+  body-md:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "16px"
+    fontWeight: 400
+    lineHeight: "24px"
+  body-sm:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "14px"
+    fontWeight: 400
+    lineHeight: "22px"
+  caption:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "13px"
+    fontWeight: 400
+    lineHeight: "20px"
+  overline:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "12px"
+    fontWeight: 500
+  micro:
+    fontFamily: "Thmanyah Sans, Arial, sans-serif"
+    fontSize: "11px"
+    fontWeight: 400
 rounded:
   xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "18px"
+  sm: "6px"
+  md: "8px"
+  lg: "12px"
+  xl: "20px"
   pill: "999px"
 spacing:
   1: "4px"
@@ -78,253 +95,211 @@ spacing:
   10: "40px"
   12: "48px"
   16: "64px"
+  20: "80px"
+  24: "96px"
 components:
   button-primary:
-    backgroundColor: "{colors.ink}"
+    backgroundColor: "{colors.blue}"
     textColor: "{colors.surface}"
     typography: "{typography.body-sm}"
     rounded: "{rounded.sm}"
-    padding: "12px 16px"
-  button-primary-hover:
-    backgroundColor: "#273842"
-    textColor: "{colors.surface}"
-    typography: "{typography.body-sm}"
-    rounded: "{rounded.sm}"
-    padding: "12px 16px"
+    minSize: "160px 41px"
+    padding: "10px 20px"
   button-secondary:
     backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
+    textColor: "{colors.midnight}"
     typography: "{typography.body-sm}"
     rounded: "{rounded.sm}"
-    padding: "12px 16px"
-  chip-critical:
-    backgroundColor: "{colors.severity-critical-soft}"
-    textColor: "{colors.severity-critical}"
-    typography: "{typography.label}"
-    rounded: "{rounded.pill}"
-    padding: "6px 10px"
-  chip-high:
-    backgroundColor: "{colors.severity-high-soft}"
-    textColor: "{colors.severity-high}"
-    typography: "{typography.label}"
-    rounded: "{rounded.pill}"
-    padding: "6px 10px"
-  chip-medium:
-    backgroundColor: "{colors.severity-medium-soft}"
-    textColor: "{colors.severity-medium}"
-    typography: "{typography.label}"
-    rounded: "{rounded.pill}"
-    padding: "6px 10px"
-  chip-low:
-    backgroundColor: "{colors.severity-low-soft}"
-    textColor: "{colors.severity-low}"
-    typography: "{typography.label}"
-    rounded: "{rounded.pill}"
-    padding: "6px 10px"
+    minSize: "160px 41px"
+    padding: "10px 20px"
+  badge:
+    typography: "{typography.overline}"
+    rounded: "{rounded.xs}"
+    padding: "3px 10px"
 ---
 
 ## Overview
 
-**Design read:** UXM Audit is an evidence-led editorial system for business stakeholders and UX professionals. It must feel precise, composed, and premium—more like a well-produced strategic report than a generic SaaS dashboard.
+**Design read:** UX Mosaic’s regional, modular brand translated into a precise evidence-led audit operating system. The public website is expressive and persuasive, the operator system is calm and operational, the client portal is reassuring and concise, and the client report is editorial and evidence-first.
 
-The design has one job: move a stakeholder from **what is wrong** to **why it matters** to **what should happen next**, with evidence always visible. The reference report's spacious, screenshot-first rhythm is retained; its brand, dated density, and ambiguous rating display are not.
+The system must communicate one product truth without explanation:
 
-### Design personality
+```text
+AI accelerates discovery.
+Humans validate decisions.
+Evidence supports findings.
+Readiness governs delivery.
+```
 
-- Quietly confident, analytical, and human—not clinical or decorative.
-- Warm paper-like canvas with near-white report surfaces; deep ink typography and a restrained terracotta accent.
-- Evidence is the visual hero. UI chrome stays quiet.
-- Internal workspace is focused and practical; client report is editorial and decision-ready.
-- Bilingual by construction: English LTR and Arabic RTL are equal first-class layouts.
+### Surface archetypes
 
-### Explicitly avoid
+- **Public website — Decide / Learn:** one product idea per section, strong editorial rhythm, real product imagery when available.
+- **Login — Configure:** focused, low-friction, no marketing detour.
+- **Operator system — Operate:** queues, selection, state, evidence, and actions dominate; no hero or decorative dashboard.
+- **Client portal — Monitor:** published status and deliverables are glanceable; internal audit complexity is absent.
+- **Client report — Decide / Learn:** evidence and recommendations form a decision document, not a workspace printout.
 
-- Purple/blue AI gradients, glass cards, fake metrics, and empty dashboard decoration.
-- Centered marketing-hero layouts, card farms, excessive pills, or arbitrary shadows.
-- Pure black/white defaults, low-contrast pale text, tiny annotations, or visual severity communicated by color alone.
-- Translating English layouts mechanically into Arabic.
+### Brand architecture
+
+- Corporate endorsement: supplied **UX Mosaic** logo.
+- Product name: **UXM Audit**.
+- Descriptor: **Evidence-led UX Audit System**.
+- The descriptor is live text. Never redraw or modify the supplied logo to add it.
 
 ## Colors
 
-### Core palette
+### Source palette
 
 | Token | Value | Role |
 |---|---:|---|
-| Ink | `#16212B` | Headlines, primary text, primary action, score numerals |
-| Ink muted | `#52616D` | Secondary body copy and metadata |
-| Canvas | `#F5F3EE` | App shell and report background; warm, non-white foundation |
-| Surface | `#FFFEFB` | Primary report page, cards, form surfaces |
-| Surface subtle | `#ECEAE4` | Dividers, inactive states, grouped neutral fields |
-| Line | `#D8D6CF` | Borders and low-emphasis separators |
-| Accent | `#C84A35` | UXM emphasis, selected states, deliberate editorial accent |
-| Link | `#1F5F8B` | URLs and navigable text; always paired with underlining or icon where helpful |
+| Midnight | `#1B1C2F` | Primary dark brand field and core ink |
+| Charcoal | `#343936` | Supporting dark neutral |
+| Slate | `#607D8B` | Calm brand field, iconography, non-text structure |
+| Blue | `#007AFF` | Brand interaction and selection accent |
+| Mint | `#A5F3B2` | Verified-ready emphasis and editorial highlight |
+| Logo blue | `#4175B9` | Embedded supplied logo artwork only |
 
-### Semantic colors
+### Bound semantic colors
 
-Severity has written labels, numeric order, and iconography in addition to color.
+- `brand/primary #007AFF` is the Figma-bound action, link, focus, selected, and active-navigation color.
+- `brand/primary-muted #4175B9` is the structural/brand-muted blue and remains distinct from interaction blue.
+- `brand/success #A5F3B2` pairs with `brand/success-text #155E27`.
+- `background/secondary #F7F7F7`, `background/surface #F5F5F5`, `border/default #DCDCE0`, and `border/subtle #E8E8EB` are the operational neutral system.
 
-| Severity | Solid | Background | Meaning |
-|---|---:|---:|---|
-| Critical | `#A51D2D` | `#FDEBED` | Immediate task, trust, or accessibility risk |
-| High | `#B13D2A` | `#FBE9E4` | High-value journey friction |
-| Medium | `#8A5C00` | `#FFF3D6` | Material friction with a viable workaround |
-| Low | `#356C50` | `#EAF5ED` | Limited-impact improvement |
+### Semantic color discipline
 
-- Annotation red is `#C8262D`; it identifies the observed issue only and is not a severity indicator.
-- Recommendation green is `#245E4B`; it identifies an action panel only and is not a positive severity state.
-- Do not use saturated color for long body text on colored panels.
+- Severity always uses written label + rank/icon in addition to color.
+- Mint means verified/ready only. It never means “AI confidence” or generic decoration inside the operator system.
+- Blue means action/navigation/selection, not success.
+- Annotation red identifies the observed evidence location; it does not replace the severity label.
+- `Not verified` is neutral and explicitly excluded from score.
 
 ## Typography
 
-### Font pairing
+### Family
 
-- **English and numerals:** `Manrope` for clean, compact professional reading.
-- **Arabic:** `IBM Plex Sans Arabic` for long-form clarity, mixed-script stability, and sober modern character.
-- Fallback: `Arial, sans-serif`.
+Figma shows Inter/Manrope only because Thmanyah Sans could not be linked there. The approved product override is **Thmanyah Sans for every English and Arabic surface**. Cairo, Inter, and Manrope are not production families.
 
-Do not force a single Latin font to render Arabic. Use locale-aware font stacks and test genuine Arabic paragraphs, URLs, and Arabic/English mixed metadata.
+Development stacks:
 
-### Type rules
+```css
+--uxm-font-ui: "Thmanyah Sans", Arial, sans-serif;
+--uxm-font-display: "Thmanyah Sans", Arial, sans-serif;
+```
 
-- Display type appears only on the cover, section dividers, and executive score contexts.
-- Use `heading-lg` for report section titles, `heading-md` for finding titles, and `body-md` for all client-facing explanations.
-- Labels are short metadata only. In English, use restrained sentence case—not loud all caps. In Arabic, never apply artificial letter spacing.
-- Minimum web body size: 16px. Minimum PDF body equivalent: 11pt. Minimum screenshot annotation label: 12px / 9pt.
-- Arabic uses a slightly more generous line-height (1.7) where needed; maintain a consistent baseline rhythm.
+The exact bound scale is Display 40, H1 28, H2 24, H3 20, Body Large 18, Body 16, Body Small 14, Caption 13, Overline 12, and Micro 11px. See `UXM-Figma-Design-System-Source-of-Truth.md`.
+
+### Rules
+
+- Display/heading letter spacing applies to Latin only. Arabic sets `letter-spacing: 0` and uses line-height around 1.65–1.75 for paragraphs.
+- Public-site display type may use weight 900. Product and report headings default to 700.
+- Avoid all-caps for long navigation or interface labels. Small English eyebrow labels may use restrained uppercase; Arabic never imitates tracking or caps.
+- Minimum web body: 16px. Minimum client PDF body: 11pt. Minimum annotation label: 12px / 9pt.
+- URLs, issue IDs, file names, browser versions, and ISO dates render in isolated LTR spans.
 
 ## Layout
 
-### Report composition
+### Shared grid
 
-- **Web desktop:** 12-column grid; max content width 1440px; outer page padding 48px.
-- **PDF:** A4 landscape is the default. Maintain a 12-column grid, 24px gutters, and a clear 20mm safe margin.
-- **Finding detail:** Evidence canvas occupies 8 columns; metadata rail occupies 4 columns. Do not shrink screenshots to make room for verbose prose.
-- **Executive pages:** use asymmetry and editorial pacing: score/summary beside priority actions, not equal-sized card rows.
-- **Section dividers:** substantial breathing room, one key insight, score, and finding count.
-
-### Responsive behavior
-
-| Width | Layout behavior |
-|---|---|
-| ≥ 1200px | 12-column grid; persistent metadata rail; evidence and text side-by-side |
-| 768–1199px | 8-column grid; metadata wraps above evidence details where necessary |
-| < 768px | single column; score/roadmap first, evidence full-width, metadata follows image |
-
-- The internal workspace can use a contextual side panel on desktop, but all primary audit actions remain reachable on narrow screens.
-- Client reports retain source order on mobile: summary → evidence → finding details → recommendation.
+- Wide web: 12 columns, max width 1440px, outer padding 48px.
+- Medium: 8 columns, padding 32px.
+- Narrow: 4 columns/single content flow, padding 20px.
 - Never create horizontal page scrolling.
+
+### Surface-specific composition
+
+- **Public website:** alternating midnight/light editorial chapters; the mosaic pattern appears at transitions and edges, not behind long text.
+- **Operator system:** stable navigation rail + contextual header + flexible work canvas. Audit context remains visible without consuming the entire first viewport.
+- **Client portal:** simple account/project hierarchy, published reports first, no internal workflow controls.
+- **Report web:** persistent compact context rail at wide widths; it folds into a summary block before content on narrow screens.
+- **Report PDF:** A4 landscape, 12-column grid, 20mm safe margin; evidence/prose ratio approximately 60/40.
+
+### Finding detail
+
+- Evidence is the visual hero.
+- Wide: evidence canvas 7–8 columns, prose/metadata 4–5 columns using `minmax(0, …)`.
+- Narrow: source order is summary → evidence → observation/impact → recommendation → metadata.
+- Full-page evidence is only acceptable for hierarchy/scroll/page-level findings. Default to finding-specific crops.
 
 ### Directionality
 
-- The English report is LTR; Arabic report reads RTL from the page shell down to navigation and metadata placement.
-- URLs, browser versions, issue IDs such as `UXM-001`, dates in ISO format, and file names render in isolated LTR spans.
-- Screenshots, screen coordinates, and web UIs inside screenshots are not mirrored.
+- Arabic shell, navigation, lists, metadata rail, and reading order are RTL.
+- Screenshots and coordinates are never mirrored.
+- Technical values use `dir="ltr"` and `unicode-bidi: isolate`.
 
 ## Elevation & Depth
 
-- Default surface treatment is a 1px `Line` border; no shadow.
-- Use one restrained shadow only for floating controls, e.g. a popover or annotation toolbar: `0 10px 30px rgba(22,33,43,0.10)`.
-- Evidence images are framed by a 1px line and small inner canvas padding; never use heavy device mockups by default.
-- Section transitions use space and a slim accent rule—not gradients or large colored blocks.
+- Default product/report surfaces use a 1px border, not shadow.
+- One restrained shadow is reserved for overlays, popovers, and floating annotation tools: `0 16px 40px rgba(27, 28, 47, 0.12)`.
+- Public marketing panels may use a softer ambient shadow only on light sections.
+- No glassmorphism, frosted layers, neon glow, or gradient sheen.
 
 ## Shapes
 
 - Default controls: 8px radius.
-- Report content surfaces: 12px radius only when they require a contained surface; the report page itself remains flat.
-- Severity/category chips: full pill radius, compact, one line.
-- Screenshot annotations: 2px solid or dashed outline, 4px radius, numbered pins at 20–24px. Use red for observed evidence and an explanatory caption outside the screenshot.
-- Icons use a single 1.75px rounded stroke family. Use familiar icons only; pair unfamiliar symbols with labels.
+- Dialogs and major report surfaces: 12–20px only when containment is necessary.
+- Pills are reserved for statuses, filters, and compact metadata—not every label.
+- Mosaic quarter-circle geometry is a brand transition device, not a universal card shape.
+- Screenshot annotations use 2px solid/dashed outlines, 4px radius, and 20–24px numbered pins.
+- Icons use one rounded 1.75–2px stroke family. Unfamiliar icons require text labels or tooltips.
 
 ## Components
 
-### Severity chip
+### Navigation
 
-`[1 Critical]`, `[2 High]`, `[3 Medium]`, or `[4 Low]`.
+- Public navigation: horizontal and restrained; one primary conversion action.
+- Operator navigation: role/task-based—Portfolio, Templates, Audits, Deliveries—not feature marketing.
+- Client navigation: Projects, Reports, Deliveries, Account.
+- Current location must be conveyed by color and structure/text, not color alone.
 
-- Always include rank + written severity + optional alert icon.
-- Never show only a four-color bar or an unexplained `1 2 3 4` row.
-- Use the matching semantic background and text token.
+### Buttons
 
-### Category chip
+- One primary action per decision area.
+- Midnight is the default high-emphasis action on light surfaces.
+- Accessible blue is reserved for product actions and selected contexts.
+- Destructive actions require written labels and confirmation.
+- Disabled/readiness-blocked actions explain why via adjacent text or tooltip.
 
-Neutral outlined chip with a familiar icon and full label, e.g. `Information Architecture` or `Content & Microcopy`. Category color must not compete with severity color.
+### Status and readiness
 
-### Issue identity
-
-Show stable ID, then concise factual title:
+Distinct written states:
 
 ```text
-UXM-014  |  Navigation labels have insufficient contrast
+Not scored · Draft · AI candidate · In human review · Evidence pending
+Evidence complete · Ready for client · Delivered · Not verified
 ```
 
-The ID is monospaced only if a dedicated monospace fallback is available; otherwise use the body label style. It must remain LTR in Arabic.
-
-### Score ring and score bar
-
-- Overall score is a large numeral plus a concise assessment label, not a ring alone.
-- Section scores use restrained bars with a visible numeric percentage.
-- Scores show coverage: `38 of 44 applicable checks assessed`.
-- Critical/High count stays visible adjacent to any score.
+Do not compress score, readiness, completion, and health into one ambiguous badge.
 
 ### Evidence frame
 
-- Use the source screenshot at a useful scale with crisp 1px border.
-- Add red dashed/solid outline only around the exact observed issue.
-- Add numbered pin(s) if multiple areas need discussion.
-- Every image requires alt text that explains what the annotation is demonstrating.
-- Support pre/post evidence as distinct frames; never overlay a recommendation mockup on top of the evidence.
+- Show the finding-specific annotated crop first.
+- Provide source capture access without replacing the crop.
+- Include URL/page/journey/capture/device metadata in a compact rail.
+- Missing evidence is a visible blocking state, never a generic image placeholder.
 
-### Finding narrative
+### Tooltips and compact actions
 
-Maintain this fixed order:
-
-1. `What we observed`
-2. `Why it matters`
-3. `Recommendation`
-
-The observation is factual, impact ties to task/business effect, and recommendation starts with an action verb. These are visibly distinct blocks, not a wall of text.
-
-### Recommendation panel
-
-- Green-tinted left/right edge depending on locale plus plain-language heading `Recommendation` / `التوصية`.
-- Use a quiet surface; it must read as a proposed action, not a success state.
-- One primary recommendation per finding. Break larger work into numbered implementation steps only when necessary.
-
-### Internal workspace controls
-
-- Status selector: explicit text options `Pass`, `Partial`, `Issue`, `Not applicable`, `Not verified`.
-- Critical actions use confirmation only where data will be discarded or publication occurs.
-- Review rows prioritize criterion title, applicability, status, linked finding count, and evidence—not generic progress widgets.
-- Empty states state what is missing and show one clear next action.
+- Icon-only actions are permitted only for familiar repeat actions and must have accessible labels, keyboard focus, and tooltips.
+- Share, PDF, delivery, and public-link actions obey readiness state.
+- Action rails are contextual, not permanently present across every screen.
 
 ## Do's and Don'ts
 
 ### Do
 
-- Let a screenshot, clear finding title, and priority lead every detail page.
-- Use full real labels: `What we observed`, `Why it matters`, `Recommendation`.
-- Build visual rhythm with wide evidence, short prose blocks, section pacing, and whitespace.
-- Preserve a client’s visual evidence accurately; annotations must be precise and minimal.
-- Make desktop and mobile report layouts intentional, not merely scaled.
-- Test Arabic content in real paragraphs, long finding titles, URLs, and mixed-language metadata.
+- Let evidence, state, and next action create hierarchy.
+- Carry the existing UX Mosaic midnight/blue/mint/pattern signature into the product with reduced intensity.
+- Use real audit content and explicit placeholders; never fabricate clients or metrics.
+- Treat English and Arabic as equal designed experiences.
+- Keep Critical/High findings visible regardless of aggregate score.
+- Separate measured facts, human-approved observations, AI candidates, and not-verified items.
 
 ### Don't
 
-- Do not use generic SaaS KPI tiles as the main Executive Snapshot.
-- Do not repeat the same equal-height card grid throughout the report.
-- Do not use color alone to communicate severity, status, or completeness.
-- Do not truncate URLs, recommendation text, or Arabic labels without a visible way to view the full value.
-- Do not treat a score as a verdict when Critical/High findings exist.
-- Do not put dense data tables in the client report; reserve audit density for the internal workspace.
-
-## Accessibility & quality gates
-
-- All normal text / background combinations must meet WCAG AA 4.5:1 minimum; large display text must meet 3:1 minimum.
-- Interactive targets are at least 44×44px on touch surfaces; desktop dense rows retain 32px minimum with sufficient separation.
-- All controls have visible keyboard focus using a 2px `Accent` outline with 2px offset.
-- Do not use automatic animation on report pages. Any UI motion is brief, subtle, and respects `prefers-reduced-motion`.
-- Exported PDFs preserve readable order, text selection, image alt text where platform-supported, and clean page breaks between finding details.
-
-## Brand asset status
-
-No UXM logo, icon, or approved brand asset was present in the current project workspace when this system was authored. Until supplied, use the text wordmark `UXM` in Manrope 700 with no invented symbol. The visual system is intentionally asset-neutral so the approved UXM mark can be inserted later without structural redesign.
+- Do not copy UX Audit Pro’s visual identity or unsupported analysis claims.
+- Do not use purple AI gradients, glassmorphism, equal card farms, fake heatmaps, fake personas, or decorative numbers.
+- Do not print the operator workspace as the client report.
+- Do not expose internal drafts, rejected candidates, private evidence, or not-verified checks in the client portal.
+- Do not let unapproved AI candidates affect score, readiness, report, PDF, or delivery.
+- Do not use the pattern as wallpaper or place it behind dense content.

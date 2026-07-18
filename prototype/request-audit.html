@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Request an audit — UX Mosaic</title>
+  <link rel="stylesheet" href="src/ui/tokens.css">
+  <link rel="stylesheet" href="src/ui/base.css">
+  <link rel="stylesheet" href="src/ui/components.css">
+  <link rel="stylesheet" href="route-shell.css">
+</head>
+<body class="route-page" data-surface="request-audit">
+  <header class="route-header route-shell">
+    <a class="route-brand" href="/" aria-label="UX Mosaic home"><img src="assets/brand/uxmosaic-horizontal-dark.png" alt="UX Mosaic"></a>
+    <a class="route-link" href="/">Back to website</a>
+  </header>
+  <main class="route-stage route-shell">
+    <section class="route-panel" aria-labelledby="request-title">
+      <p class="route-kicker">Start with a clear scope</p>
+      <h1 id="request-title">Request an audit</h1>
+      <p class="route-panel__intro">Tell UX Mosaic where the experience needs attention. Scope and access are confirmed before any audit begins.</p>
+      <form class="route-form" aria-describedby="request-status">
+        <label class="uxm-field"><span class="uxm-field__label">Name</span><input class="uxm-input" autocomplete="name" disabled></label>
+        <label class="uxm-field"><span class="uxm-field__label">Work email</span><input class="uxm-input" type="email" autocomplete="email" disabled></label>
+        <label class="uxm-field"><span class="uxm-field__label">Website URL</span><input class="uxm-input" type="url" inputmode="url" disabled></label>
+        <button class="uxm-button uxm-button--primary uxm-button--large" type="submit" disabled>Continue request</button>
+        <p class="route-form-status" id="request-status">Secure request submission will be connected in its dedicated product slice. No information is collected on this route yet.</p>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

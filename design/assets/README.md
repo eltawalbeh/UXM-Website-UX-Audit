@@ -2,17 +2,16 @@
 
 ## Current status
 
-No approved UXM brand assets were found inside this project workspace when Task 2 was completed. The interface must therefore use a text-only `UXM` wordmark until supplied; do not invent an icon, logo mark, or client logo.
+Approved UX Mosaic logo exports and the Mosaic pattern reference are retained under `design/assets/` and copied into `prototype/assets/`. The development package contains Thmanyah Sans 400/500/700/900 webfonts as the approved family for English and Arabic. The supplied logo artwork remains unchanged; `#4175B9` stays embedded in the logo while `#007AFF` is the Figma-bound product interaction color.
 
-## Required UXM source assets
+## Approved UXM source assets
 
-| Asset | Preferred format | Required use |
+| Asset | Location | Required use |
 |---|---|---|
-| UXM primary logo | SVG + transparent PNG fallback | Report cover, closing page, workspace header |
-| UXM monochrome logo | SVG | Small contexts, print, dark/light surfaces |
-| UXM favicon/app mark | SVG/PNG | Local application and browser tab |
-| Approved brand font license/files, if not web-hosted | WOFF2 | Optional replacement for the documented font system |
-| Brand photography/illustration direction | Reference images or a short brief | Cover and section-divider visuals only |
+| Horizontal light/dark logos | `prototype/assets/brand/uxmosaic-horizontal-*.png` | Public header/footer, operator shell, shared report |
+| Vertical light/dark logos | `prototype/assets/brand/uxmosaic-vertical-*.png` | Compact and formal report compositions |
+| Mosaic pattern source | `prototype/assets/brand/mosaic-pattern-source.png` | Restrained public/login/report brand geometry |
+| Thmanyah Sans 400/500/700/900 | `prototype/assets/fonts/thmanyah-sans/` | Approved primary typography for all English and Arabic surfaces |
 
 ## Per-audit client assets
 

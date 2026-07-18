@@ -1,3 +1,45 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UXM Audit Prototype</title><link rel="stylesheet" href="styles.css"></head>
-<body><div id="app"></div><script type="module" src="app.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="icon" href="data:,">
+  <meta name="description" content="UX Mosaic evidence-led UX audits turn observed experience issues into validated findings and delivery-ready reports.">
+  <title>UX Mosaic — Evidence-led UX Audit System</title>
+  <link rel="stylesheet" href="src/ui/tokens.css">
+  <link rel="stylesheet" href="src/ui/base.css">
+  <link rel="stylesheet" href="src/ui/components.css">
+  <link rel="stylesheet" href="route-shell.css">
+</head>
+<body class="route-page" data-surface="public">
+  <header class="route-header route-shell">
+    <a class="route-brand" href="/" aria-label="UX Mosaic home"><img src="assets/brand/uxmosaic-horizontal-dark.png" alt="UX Mosaic"></a>
+    <nav class="route-header__actions" aria-label="Primary navigation">
+      <a class="route-link" href="login.html">Operator login</a>
+      <a class="uxm-button uxm-button--primary" href="request-audit.html">Request an audit</a>
+    </nav>
+  </header>
+  <main class="route-shell">
+    <section class="route-hero">
+      <div>
+        <p class="route-kicker">Evidence-led UX Audit System</p>
+        <h1>Find what blocks the experience. Prove what needs to change.</h1>
+        <p class="route-lede">UX Mosaic turns observed experience issues into human-validated findings, clear priorities, and delivery-ready reports.</p>
+        <div class="route-actions">
+          <a class="uxm-button uxm-button--primary uxm-button--large" href="request-audit.html">Request an audit</a>
+          <a class="uxm-button uxm-button--ghost uxm-button--large" href="login.html">Operator login</a>
+        </div>
+      </div>
+      <aside class="route-principle" aria-label="Audit workflow">
+        <strong>Evidence controls delivery.</strong>
+        <ol class="route-flow">
+          <li><b>1</b><span>AI discovers review candidates.</span></li>
+          <li><b>2</b><span>A human validates the finding and evidence.</span></li>
+          <li><b>3</b><span>Readiness controls what reaches the report.</span></li>
+        </ol>
+      </aside>
+    </section>
+  </main>
+  <footer class="route-footer route-shell"><span>UX Mosaic</span><span>Evidence-led UX Audit System</span></footer>
+</body>
+</html>

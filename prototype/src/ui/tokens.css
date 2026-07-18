@@ -1,0 +1,97 @@
+@import url('./figma-tokens.css');
+
+/* Stable product aliases mapped directly to the live Figma variable namespace. */
+:root {
+  color-scheme: light;
+
+  --uxm-logo-blue: var(--figma-brand-primary-muted);
+  --uxm-action-blue: var(--figma-brand-primary);
+  --uxm-action-blue-accessible: var(--figma-brand-primary);
+  --uxm-action-blue-soft: var(--figma-status-info-bg);
+  --uxm-midnight: var(--figma-background-dark);
+  --uxm-dark-secondary: var(--figma-background-dark-secondary);
+  --uxm-charcoal: var(--figma-text-secondary);
+  --uxm-slate: var(--figma-text-tertiary);
+  --uxm-mint: var(--figma-brand-success);
+
+  --uxm-canvas: var(--figma-background-secondary);
+  --uxm-surface: var(--figma-background-primary);
+  --uxm-surface-subtle: var(--figma-background-surface);
+  --uxm-surface-dark: var(--figma-background-dark-secondary);
+  --uxm-border-neutral: var(--figma-border-default);
+  --uxm-border-subtle: var(--figma-border-subtle);
+  --uxm-ink: var(--figma-text-primary);
+  --uxm-ink-secondary: var(--figma-text-secondary);
+  --uxm-ink-muted: var(--figma-text-tertiary);
+  --uxm-placeholder: var(--figma-text-placeholder);
+  --uxm-link: var(--figma-text-link);
+
+  --uxm-critical: var(--figma-brand-error);
+  --uxm-critical-soft: var(--figma-status-error-bg);
+  --uxm-high: var(--figma-brand-warning);
+  --uxm-high-soft: var(--figma-color-amber-50);
+  --uxm-warning: var(--figma-brand-warning);
+  --uxm-warning-soft: var(--figma-status-warning-bg);
+  --uxm-low: var(--figma-brand-success-text);
+  --uxm-low-soft: var(--figma-status-success-bg);
+  --uxm-annotation: var(--figma-brand-error);
+  --uxm-status-ready-bg: var(--figma-status-success-bg);
+  --uxm-status-ready-ink: var(--figma-brand-success-text);
+  --uxm-status-blocked-bg: var(--figma-status-error-bg);
+  --uxm-status-blocked-ink: var(--figma-status-error-text);
+  --uxm-status-warning-bg: var(--figma-status-warning-bg);
+  --uxm-status-warning-ink: var(--figma-status-warning-text);
+  --uxm-status-neutral-bg: var(--figma-background-surface);
+  --uxm-status-neutral-ink: var(--figma-text-tertiary);
+
+  --uxm-font-ui: "Thmanyah Sans", Arial, sans-serif;
+  --uxm-font-display: "Thmanyah Sans", Arial, sans-serif;
+  --uxm-font-sans: var(--uxm-font-ui);
+  --uxm-font-arabic: "Thmanyah Sans", Arial, sans-serif;
+  --uxm-font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  --uxm-type-display: 40px;
+  --uxm-type-heading-1: 28px;
+  --uxm-type-heading-2: 24px;
+  --uxm-type-heading-3: 20px;
+  --uxm-type-body-lg: 18px;
+  --uxm-type-body: 16px;
+  --uxm-type-body-sm: 14px;
+  --uxm-type-caption: 13px;
+  --uxm-type-overline: 12px;
+  --uxm-type-micro: 11px;
+  --uxm-type-label: var(--uxm-type-overline);
+  --uxm-leading-display: 44px;
+  --uxm-leading-heading-1: 31px;
+  --uxm-leading-heading-2: 32px;
+  --uxm-leading-heading-3: 27px;
+  --uxm-leading-body-lg: 28px;
+  --uxm-leading-body: 24px;
+  --uxm-leading-body-sm: 22px;
+  --uxm-leading-caption: 20px;
+
+  --uxm-space-1: var(--figma-spacing-4xs);
+  --uxm-space-2: var(--figma-spacing-3xs);
+  --uxm-space-3: var(--figma-spacing-2xs);
+  --uxm-space-4: var(--figma-spacing-xs);
+  --uxm-space-5: var(--figma-spacing-sm);
+  --uxm-space-6: var(--figma-spacing-md);
+  --uxm-space-8: var(--figma-spacing-lg);
+  --uxm-space-10: var(--figma-spacing-xl-md);
+  --uxm-space-12: var(--figma-spacing-xl-sm);
+  --uxm-space-14: var(--figma-spacing-xl);
+  --uxm-space-16: var(--figma-spacing-2xl);
+  --uxm-space-20: var(--figma-spacing-3xl);
+  --uxm-space-24: var(--figma-spacing-5xl);
+  --uxm-radius-xs: var(--figma-radius-4);
+  --uxm-radius-sm: var(--figma-radius-6);
+  --uxm-radius-md: var(--figma-radius-8);
+  --uxm-radius-lg: var(--figma-radius-12);
+  --uxm-radius-xl: var(--figma-radius-20);
+  --uxm-radius-pill: var(--figma-radius-full);
+  --uxm-shadow-raised: 0 2px 4px rgb(0 0 0 / 0.06);
+  --uxm-shadow-focus: 0 0 0 3px rgb(0 122 255 / 0.24);
+  --uxm-control-height: 44px;
+  --uxm-content-max: 90rem;
+  --uxm-reading-max: 68ch;
+  --uxm-motion-fast: 150ms;
+}
