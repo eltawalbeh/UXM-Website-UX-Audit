@@ -27,3 +27,32 @@ test('workspace exposes evidence attachment and readiness-gated publication cont
   assert.match(app, /\/export-pdf/);
   assert.match(app, /workspaceEvidence\(f\)/);
 });
+
+test('workspace composes the approved operator shell around persisted audit context', async () => {
+  const app = await readFile(new URL('../app.js', import.meta.url), 'utf8');
+
+  assert.match(app, /workspace-rail/);
+  assert.match(app, /audit-context-header/);
+  assert.match(app, /audit-subnav/);
+  assert.match(app, /Portfolio/);
+  assert.match(app, /Deliveries/);
+  assert.match(app, /Scope & Pages/);
+  assert.match(app, /Score & Priorities/);
+  assert.match(app, /Readiness/);
+  assert.match(app, /audit\.id/);
+  assert.match(app, /publicationReadiness/);
+});
+
+test('workspace mobile audit navigation exposes every section without a horizontal strip', async () => {
+  const css = await readFile(new URL('../workspace-polish.css', import.meta.url), 'utf8');
+
+  assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.audit-subnav\s*\{[^}]*display:\s*grid[^}]*overflow:\s*visible/is);
+  assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.audit-subnav\s*\{[^}]*grid-template-columns:\s*repeat\(2/is);
+});
+
+test('workspace mobile primary navigation keeps Portfolio through Deliveries visible', async () => {
+  const css = await readFile(new URL('../workspace-polish.css', import.meta.url), 'utf8');
+
+  assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.workspace-rail__nav\s*\{[^}]*display:\s*grid[^}]*overflow:\s*visible/is);
+  assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.workspace-rail__nav\s*\{[^}]*grid-column:\s*1\s*\/\s*-1/is);
+});
