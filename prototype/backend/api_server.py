@@ -19,10 +19,11 @@ from backend.audit_copilot import build_context, configured_drafter
 from backend.audit_templates import get_audit_template, load_audit_templates
 from backend.ai_first_pass import build_first_pass_context, configured_first_pass_drafter, detect_product_type, explore_public_pages, finalize_scope, safe_public_url, scope_request
 from backend.auth import SessionStore, session_cookie, session_token, verify_credentials
-from backend.storage import AuditRepository
+from backend.storage import AuditRepository, EvidenceCompletionConflict
 
 
 MAX_PUBLIC_REQUEST_BYTES = 64 * 1024
+MAX_OPERATOR_JSON_BYTES = 64 * 1024
 PUBLIC_REQUEST_RATE_LIMIT = 5
 PUBLIC_REQUEST_RATE_WINDOW_SECONDS = 60
 
@@ -217,18 +218,54 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             if evidence_match:
                 self._upload_evidence(evidence_match.group(1), evidence_match.group(2))
                 return
+            finding_complete_match = re.fullmatch(r"/api/audits/([^/]+)/findings/([^/]+)/evidence-complete", path)
+            if finding_complete_match:
+                try:
+                    request_data = self._request_json(max_bytes=MAX_OPERATOR_JSON_BYTES)
+                    if request_data != {"evidenceComplete": True}:
+                        raise ValueError("Evidence completion must be explicitly confirmed")
+                    finding = repository.mark_evidence_complete(finding_complete_match.group(1), finding_complete_match.group(2))
+                    self._json(200, {**finding, "completed": True})
+                except LookupError as error:
+                    self._json(404, {"error": str(error)})
+                except EvidenceCompletionConflict as error:
+                    self._json(409, {"error": str(error), "completed": False})
+                except OverflowError:
+                    self._json(413, {"error": "Request body is too large"})
+                except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
+                    self._json(400, {"error": str(error)})
+                return
+            finding_draft_match = re.fullmatch(r"/api/audits/([^/]+)/findings", path)
+            if finding_draft_match:
+                try:
+                    self._json(201, repository.save_finding_draft(finding_draft_match.group(1), self._request_json(max_bytes=MAX_OPERATOR_JSON_BYTES)))
+                except LookupError as error:
+                    self._json(404, {"error": str(error)})
+                except OverflowError:
+                    self._json(413, {"error": "Request body is too large"})
+                except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
+                    self._json(409 if "already exists" in str(error) else 400, {"error": str(error)})
+                return
             if path != "/api/audits":
                 self._json(404, {"error": "Not found"})
                 return
             try:
-                audit = self._request_json()
+                audit = self._request_json(max_bytes=MAX_OPERATOR_JSON_BYTES)
+                if not isinstance(audit, dict):
+                    raise ValueError("Audit must be a JSON object")
                 for field in ("id", "client", "url"):
                     if not isinstance(audit.get(field), str) or not audit[field]:
                         raise ValueError(f"{field} is required")
+                findings = audit.get("findings", [])
+                if not isinstance(findings, list) or findings:
+                    raise ValueError("Findings can only be changed through the finding editor endpoints")
+            except OverflowError:
+                self._json(413, {"error": "Request body is too large"})
+                return
             except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
                 self._json(400, {"error": str(error)})
                 return
-            repository.upsert_audit(audit)
+            repository.save_audit_preserving_findings(audit)
             summary = next(item for item in repository.list_audits() if item["id"] == audit["id"])
             self._json(201, summary)
 

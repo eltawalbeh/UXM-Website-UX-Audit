@@ -98,7 +98,11 @@ def normalize_audit(audit: dict) -> dict:
             "capturedAt": legacy.get("capturedAt") or legacy["captureMetadata"]["capturedAt"],
             "description": legacy.get("description", ""),
             "annotation": legacy.get("annotation"),
+            # Import is a deliberate, verified migration action: both checked-in
+            # source files are copied before this record may be publishable.
+            "status": "complete",
         }
+        finding["evidenceComplete"] = True
     return normalized
 
 

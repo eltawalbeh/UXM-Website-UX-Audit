@@ -65,6 +65,7 @@ class ReleaseAcceptanceTests(unittest.TestCase):
         status, selected = self.get_json("/api/audits/release_demo")
         self.assertEqual(status, 200)
         selected["assessments"]["NAV-01"] = "issue"
+        selected["findings"] = []
         self.assertEqual(self.post("/api/audits", json.dumps(selected).encode(), {"Content-Type": "application/json"})[0], 201)
 
         _, reloaded = self.get_json("/api/audits/release_demo")
@@ -76,6 +77,13 @@ class ReleaseAcceptanceTests(unittest.TestCase):
             )
             self.assertEqual(status, 201)
             self.assertTrue((self.repository.evidence_dir / attachment["filename"]).is_file())
+
+        # Uploading files alone is not a publication claim; an operator makes
+        # the explicit, truthful completion decision after both are persisted.
+        finding = self.repository.get_audit("release_demo")["findings"][0]
+        finding["evidence"] |= {"capture": {"device": "Desktop Chrome"}, "capturedAt": "2026-07-14T12:00:00Z"}
+        self.repository.upsert_audit(self.repository.get_audit("release_demo") | {"findings": [finding]})
+        self.assertEqual(self.post("/api/audits/release_demo/findings/UXM-901/evidence-complete", b'{"evidenceComplete":true}', {"Content-Type": "application/json"})[0], 200)
 
         _, readiness = self.get_json("/api/audits/release_demo/readiness")
         self.assertTrue(readiness["ready"], readiness["blockers"])

@@ -189,6 +189,18 @@
 .candidate-review__inspector small { color: var(--operator-muted); line-height: 1.45; }
 .candidate-review__decision-bar { position: sticky; bottom: 0; display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--operator-border); background: var(--operator-surface); }
 
+/* Phase 4.8: proof stays beside the structured operator decision, not behind it. */
+.evidence-first-editor { display: grid; grid-template-columns: minmax(300px, .9fr) minmax(0, 1.35fr); gap: 20px; align-items: start; }
+.evidence-first-editor__canvas { position: sticky; top: 20px; display: grid; gap: 12px; padding: 20px; border: 1px solid var(--operator-border); border-radius: var(--uxm-radius-lg); background: var(--operator-surface); }
+.evidence-first-editor__canvas h1 { margin: 0; font-size: 24px; line-height: 1.15; letter-spacing: -.035em; }
+.evidence-first-editor__canvas .muted { margin: 0; line-height: 1.5; }
+.evidence-first-editor__proof { display: grid; place-items: center; min-height: 180px; overflow: hidden; border: 1px dashed var(--operator-border); border-radius: var(--uxm-radius-md); color: var(--operator-muted); background: var(--uxm-canvas); text-align: center; }
+.evidence-first-editor__proof img { display: block; width: 100%; max-height: 320px; object-fit: contain; }
+.evidence-upload { display: grid; gap: 6px; color: var(--operator-ink); font-size: 13px; font-weight: 700; }
+.evidence-upload input { width: 100%; }
+.evidence-first-editor__actions { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 0; background: var(--operator-surface); }
+.rtl .evidence-first-editor__canvas { text-align: right; }
+
 .rtl .workspace-rail__link.is-current { box-shadow: inset -3px 0 0 var(--uxm-action-blue); }
 .rtl .workspace-rail__future small { margin-inline-start: 0; margin-inline-end: auto; }
 .rtl .audit-context-header__actions { justify-content: flex-start; }
@@ -230,6 +242,9 @@
   .candidate-review { grid-template-columns: minmax(0, 1fr); }
   .candidate-review__queue, .candidate-review__evidence { border-inline-end: 0; border-bottom: 1px solid var(--operator-border); }
   .candidate-review__decision-bar { position: static; }
+  .evidence-first-editor { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .evidence-first-editor__canvas { position: static; }
+  .evidence-first-editor__actions { position: static; }
 }
 
 @media (prefers-reduced-motion: reduce) {

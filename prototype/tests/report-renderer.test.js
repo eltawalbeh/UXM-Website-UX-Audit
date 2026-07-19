@@ -122,3 +122,15 @@ test('renderReport creates a native RTL Arabic report and isolates technical tok
   assert.match(html, /الترجمة العربية مطلوبة قبل النشر/);
   assert.doesNotMatch(html, /Required fields are unclear before submission/);
 });
+
+test('renderReport escapes persisted finding prose, title, and evidence alt text', () => {
+  const payload = '<img src=x onerror=alert(1)>';
+  const html = renderReport({
+    ...audit,
+    findings: [{ ...audit.findings[0], title: payload, observed: payload, impact: payload, recommendation: payload,
+      evidence: { annotatedImage: { path: 'evidence/proof.png' }, alt: payload, description: payload } }],
+  }, 'en');
+
+  assert.doesNotMatch(html, /<img src=x onerror=alert\(1\)>/);
+  assert.match(html, /&lt;img src=x onerror=alert\(1\)&gt;/);
+});

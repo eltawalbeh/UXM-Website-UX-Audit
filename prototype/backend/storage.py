@@ -10,6 +10,10 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
+class EvidenceCompletionConflict(ValueError):
+    """The operator's completion decision no longer matches persisted evidence."""
+
+
 class AuditRepository:
     PROJECT_STATUSES = {"draft", "in_review", "evidence_complete", "ready_for_client", "delivered"}
 
@@ -195,6 +199,32 @@ class AuditRepository:
             """, (audit["id"], audit["client"], audit["url"], audit.get("locale", "en"), source,
                   json.dumps(audit, ensure_ascii=False), updated_at, audit.get("projectId")))
             connection.commit()
+        finally:
+            connection.close()
+
+    def save_audit_preserving_findings(self, audit: dict, source: str = "workspace") -> None:
+        """Atomically save workspace fields without allowing a stale payload to overwrite findings."""
+        updated_at = datetime.now(timezone.utc).isoformat()
+        connection = self._connect()
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute("SELECT body FROM audits WHERE id = ?", (audit["id"],)).fetchone()
+            if row is not None:
+                audit = {**audit, "findings": json.loads(row["body"]).get("findings", [])}
+            connection.execute("""
+                INSERT INTO audits (id, client, url, locale, source, body, updated_at, project_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET
+                  client=excluded.client, url=excluded.url, locale=excluded.locale,
+                  source=excluded.source, body=excluded.body, updated_at=excluded.updated_at,
+                  project_id=excluded.project_id
+            """, (audit["id"], audit["client"], audit["url"], audit.get("locale", "en"), source,
+                  json.dumps(audit, ensure_ascii=False), updated_at, audit.get("projectId")))
+            connection.commit()
+        except Exception:
+            if connection.in_transaction:
+                connection.rollback()
+            raise
         finally:
             connection.close()
 
@@ -388,20 +418,33 @@ class AuditRepository:
             counts["auditsLinked"] += 1
         return counts
 
+    @staticmethod
+    def _normalize_capture_timestamp(value: str) -> str:
+        if not isinstance(value, str) or not (value := value.strip()):
+            raise ValueError("Evidence capture timestamp is required")
+        if len(value) > 80:
+            raise ValueError("Evidence capture timestamp is too long")
+        try:
+            captured_at = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError as error:
+            raise ValueError("Evidence capture timestamp must be an ISO timestamp") from error
+        if captured_at.tzinfo is None:
+            raise ValueError("Evidence capture timestamp must include a timezone")
+        return captured_at.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
     def attach_evidence(self, audit_id: str, finding_id: str, kind: str, body: bytes, mime_type: str, original_filename: str, captured_at: str = "") -> dict:
         if kind not in {"source", "annotated"}:
             raise ValueError("Evidence kind must be source or annotated")
         if Path(original_filename).name != original_filename or ".." in original_filename:
             raise ValueError("Unsafe filename")
-        audit = self.get_audit(audit_id)
-        if audit is None:
+        normalized_captured_at = self._normalize_capture_timestamp(captured_at) if captured_at else ""
+        # Preserve the preflight lookup for a prompt not-found response, but never
+        # mutate its snapshot: completion may race between this read and the write.
+        if self.get_audit(audit_id) is None:
             raise LookupError("Audit not found")
-        finding = next((item for item in audit.get("findings", []) if item.get("id") == finding_id), None)
-        if finding is None:
-            raise LookupError("Finding not found")
         extension = ".png" if mime_type == "image/png" else ".jpg"
         filename = f"{uuid.uuid4().hex}{extension}"
-        (self.evidence_dir / filename).write_bytes(body)
+        evidence_path = self.evidence_dir / filename
         evidence = {
             "filename": filename,
             "path": f"evidence/{filename}",
@@ -410,13 +453,176 @@ class AuditRepository:
             "bytes": len(body),
             "uploadedAt": datetime.now(timezone.utc).isoformat(),
         }
-        evidence_record = finding.setdefault("evidence", {})
-        evidence_record[f"{kind}Image"] = evidence
-        if captured_at:
-            evidence_record["capturedAt"] = captured_at
-            evidence["capturedAt"] = captured_at
-        self.upsert_audit(audit)
-        return evidence
+        connection = self._connect()
+        wrote_file = False
+        try:
+            # The transaction must include the re-read and replacement.  Otherwise
+            # a stale completion snapshot can restore the previous asset afterward.
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute("SELECT body FROM audits WHERE id = ?", (audit_id,)).fetchone()
+            if row is None:
+                raise LookupError("Audit not found")
+            audit = json.loads(row["body"])
+            finding = self._finding_by_id(audit, finding_id)
+            evidence_path.write_bytes(body)
+            wrote_file = True
+            evidence_record = finding.setdefault("evidence", {})
+            evidence_record[f"{kind}Image"] = evidence
+            # A changed asset invalidates every prior completion decision.
+            evidence_record["status"] = "draft"
+            finding.pop("evidenceComplete", None)
+            if normalized_captured_at:
+                evidence_record["capturedAt"] = normalized_captured_at
+                evidence["capturedAt"] = normalized_captured_at
+            connection.execute(
+                "UPDATE audits SET body = ?, updated_at = ? WHERE id = ?",
+                (json.dumps(audit, ensure_ascii=False), datetime.now(timezone.utc).isoformat(), audit_id),
+            )
+            connection.commit()
+            return evidence
+        except Exception:
+            if connection.in_transaction:
+                connection.rollback()
+            if wrote_file:
+                evidence_path.unlink(missing_ok=True)
+            raise
+        finally:
+            connection.close()
+
+    @staticmethod
+    def _finding_by_id(audit: dict, finding_id: str) -> dict:
+        finding = next((item for item in audit.get("findings", []) if item.get("id") == finding_id), None)
+        if finding is None:
+            raise LookupError("Finding not found")
+        return finding
+
+    def save_finding_draft(self, audit_id: str, data: dict) -> dict:
+        """Persist an operator-authored draft without claiming its evidence is complete."""
+        if not isinstance(data, dict):
+            raise ValueError("Finding draft must be a JSON object")
+        if data.get("candidateId"):
+            raise ValueError("AI candidate payloads cannot become official findings automatically")
+        required = ("id", "checkpoint", "url", "page", "journey", "severity", "effort", "title", "observed", "impact", "recommendation")
+        missing = [field for field in required if not isinstance(data.get(field), str) or not data[field].strip()]
+        if missing:
+            raise ValueError(f"Finding metadata is required: {', '.join(missing)}")
+        if data["severity"] not in {"critical", "high", "medium", "low"}:
+            raise ValueError("Invalid finding severity")
+        if data["effort"] not in {"low", "medium", "high"}:
+            raise ValueError("Invalid finding effort")
+        limits = {"id": 80, "checkpoint": 80, "url": 2048, "page": 200, "journey": 200,
+                  "title": 240, "observed": 4000, "impact": 4000, "recommendation": 4000}
+        for field, limit in limits.items():
+            if len(data[field].strip()) > limit:
+                raise ValueError(f"Finding {field} is too long")
+        parsed_url = urlparse(data["url"].strip())
+        if parsed_url.scheme not in {"http", "https"} or not parsed_url.netloc:
+            raise ValueError("Finding URL must start with http:// or https://")
+        evidence = data.get("evidence") if isinstance(data.get("evidence"), dict) else {}
+        capture = evidence.get("capture") if isinstance(evidence.get("capture"), dict) else {}
+        if not isinstance(capture.get("device"), str) or not capture["device"].strip():
+            raise ValueError("Evidence capture device is required")
+        if capture["device"].strip() not in {"Desktop Chrome", "Mobile Safari", "Android Chrome", "Other"}:
+            raise ValueError("Invalid evidence capture device")
+        captured_at = self._normalize_capture_timestamp(evidence.get("capturedAt"))
+        alt = evidence.get("alt")
+        if not isinstance(alt, str) or not (alt := alt.strip()) or len(alt) > 500 or len(alt.split()) < 3:
+            raise ValueError("Evidence alt text must be a descriptive 3-to-500-character phrase")
+        finding = {key: value for key, value in data.items() if key not in {"candidateId", "evidenceComplete", "editingFindingId"}}
+        # Attachments are created only by attach_evidence.  The editor can update
+        # descriptive capture metadata, but it must never be able to attach a
+        # filename/path supplied by the client (including one owned by another
+        # finding) or carry a completion state forward.
+        finding["evidence"] = {
+            "alt": alt,
+            "capturedAt": captured_at,
+            "capture": {"device": capture["device"].strip()},
+            "status": "draft",
+        }
+        connection = self._connect()
+        try:
+            # Claim the write transaction before inspecting the JSON document, so two
+            # new drafts cannot both decide that the same ID is still available.
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute("SELECT body FROM audits WHERE id = ?", (audit_id,)).fetchone()
+            if row is None:
+                raise LookupError("Audit not found")
+            audit = json.loads(row["body"])
+            existing = next((index for index, item in enumerate(audit.get("findings", [])) if item.get("id") == finding["id"]), None)
+            if existing is None:
+                if data.get("editingFindingId"):
+                    raise ValueError("Finding no longer exists")
+                audit.setdefault("findings", []).append(finding)
+            else:
+                if data.get("editingFindingId") != finding["id"]:
+                    raise ValueError("A finding with this ID already exists")
+                # Preserve uploaded image references when an operator edits prose or metadata.
+                previous_evidence = audit["findings"][existing].get("evidence") or {}
+                for image_key in ("sourceImage", "annotatedImage"):
+                    if image_key in previous_evidence and image_key not in finding["evidence"]:
+                        finding["evidence"][image_key] = previous_evidence[image_key]
+                audit["findings"][existing] = finding
+            connection.execute(
+                "UPDATE audits SET body = ?, updated_at = ? WHERE id = ?",
+                (json.dumps(audit, ensure_ascii=False), datetime.now(timezone.utc).isoformat(), audit_id),
+            )
+            connection.commit()
+            return finding
+        except Exception:
+            if connection.in_transaction:
+                connection.rollback()
+            raise
+        finally:
+            connection.close()
+
+    def mark_evidence_complete(self, audit_id: str, finding_id: str) -> dict:
+        """Mark evidence complete only after persisted, operator-uploaded proof exists."""
+        # Record the decision's source revision before waiting for the write lock.
+        # If an upload replaced evidence while this request was in flight, that
+        # completion decision is stale and the replacement's draft state wins.
+        baseline_audit = self.get_audit(audit_id)
+        if baseline_audit is None:
+            raise LookupError("Audit not found")
+        baseline_finding = self._finding_by_id(baseline_audit, finding_id)
+        baseline_evidence = json.dumps(baseline_finding.get("evidence") or {}, ensure_ascii=False, sort_keys=True)
+        connection = self._connect()
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            row = connection.execute("SELECT body FROM audits WHERE id = ?", (audit_id,)).fetchone()
+            if row is None:
+                raise LookupError("Audit not found")
+            audit = json.loads(row["body"])
+            finding = self._finding_by_id(audit, finding_id)
+            evidence = finding.get("evidence") or {}
+            # Re-read after acquiring the lock.  A concurrent replacement changes
+            # this revision, so it must remain draft rather than restoring a stale
+            # completion state or asset metadata.
+            if json.dumps(evidence, ensure_ascii=False, sort_keys=True) != baseline_evidence:
+                raise EvidenceCompletionConflict("Evidence changed while completion was pending; review and confirm it again")
+            capture = evidence.get("capture") if isinstance(evidence.get("capture"), dict) else {}
+            if not evidence.get("capturedAt") or not capture.get("device"):
+                raise ValueError("Truthful capture metadata is required before evidence can be complete")
+            evidence["capturedAt"] = self._normalize_capture_timestamp(evidence["capturedAt"])
+            for key, label in (("sourceImage", "source image"), ("annotatedImage", "annotated image")):
+                image = evidence.get(key) if isinstance(evidence.get(key), dict) else {}
+                filename = image.get("filename")
+                if not filename or not (self.evidence_dir / filename).is_file():
+                    raise ValueError(f"A persisted {label} is required before evidence can be complete")
+            evidence["status"] = "complete"
+            finding["evidence"] = evidence
+            finding["evidenceComplete"] = True
+            connection.execute(
+                "UPDATE audits SET body = ?, updated_at = ? WHERE id = ?",
+                (json.dumps(audit, ensure_ascii=False), datetime.now(timezone.utc).isoformat(), audit_id),
+            )
+            connection.commit()
+            return finding
+        except Exception:
+            if connection.in_transaction:
+                connection.rollback()
+            raise
+        finally:
+            connection.close()
 
     def publication_readiness(self, audit_id: str, locale: str | None = None) -> dict:
         audit = self.get_audit(audit_id)
@@ -433,8 +639,8 @@ class AuditRepository:
             evidence = finding.get("evidence") or {}
             def block(code, message):
                 blockers.append({"findingId": finding_id, "code": code, "message": message})
-            if evidence.get("status") == "pending":
-                block("pending_evidence", "Evidence is still pending.")
+            if evidence.get("status") != "complete" or finding.get("evidenceComplete") is not True:
+                block("evidence_not_explicitly_complete", "Evidence must be explicitly marked complete by an operator.")
             for kind, code in (("sourceImage", "missing_source_image"), ("annotatedImage", "missing_annotated_image")):
                 image = evidence.get(kind) or {}
                 filename = image.get("filename") if isinstance(image, dict) else None
