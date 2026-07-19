@@ -36,7 +36,7 @@ class AuditCopilotApiTests(unittest.TestCase):
             }}
 
         from backend.api_server import create_server
-        self.server = create_server(self.repo, static_root, host="127.0.0.1", port=0, ai_drafter=drafter)
+        self.server = create_server(self.repo, static_root, host="127.0.0.1", port=0, ai_drafter=drafter, require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.base_url = f"http://127.0.0.1:{self.server.server_port}"
@@ -81,7 +81,7 @@ class AuditCopilotApiTests(unittest.TestCase):
         self.thread.join()
         self.server.server_close()
         from backend.api_server import create_server
-        self.server = create_server(self.repo, Path(self.temp.name) / "static", host="127.0.0.1", port=0, ai_drafter=lambda context: {"status": "unavailable", "message": "AI connection unavailable. Configure UXM_AI_ENDPOINT and UXM_AI_API_KEY, then try again."})
+        self.server = create_server(self.repo, Path(self.temp.name) / "static", host="127.0.0.1", port=0, ai_drafter=lambda context: {"status": "unavailable", "message": "AI connection unavailable. Configure UXM_AI_ENDPOINT and UXM_AI_API_KEY, then try again."}, require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.base_url = f"http://127.0.0.1:{self.server.server_port}"

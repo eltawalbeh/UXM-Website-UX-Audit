@@ -37,7 +37,7 @@ class ReleaseAcceptanceTests(unittest.TestCase):
             }],
         }
         self.repository.upsert_audit(self.audit, source="pilot")
-        self.server = create_server(self.repository, self.static_root, host="127.0.0.1", port=0)
+        self.server = create_server(self.repository, self.static_root, host="127.0.0.1", port=0, require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.base_url = f"http://127.0.0.1:{self.server.server_port}"

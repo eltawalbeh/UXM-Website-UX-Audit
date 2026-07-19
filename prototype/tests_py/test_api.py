@@ -24,7 +24,7 @@ class ApiServerTests(unittest.TestCase):
 
         from backend.api_server import create_server
 
-        self.server = create_server(self.repo, static_root, host="127.0.0.1", port=0)
+        self.server = create_server(self.repo, static_root, host="127.0.0.1", port=0, require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.base_url = f"http://127.0.0.1:{self.server.server_port}"
@@ -165,7 +165,7 @@ class ApiServerTests(unittest.TestCase):
         self.thread.join()
         self.server.server_close()
         from backend.api_server import create_server
-        self.server = create_server(self.repo, self.temp.name, host="127.0.0.1", port=0, pdf_exporter=fake_exporter)
+        self.server = create_server(self.repo, self.temp.name, host="127.0.0.1", port=0, pdf_exporter=fake_exporter, require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.base_url = f"http://127.0.0.1:{self.server.server_port}"

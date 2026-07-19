@@ -43,6 +43,15 @@ test('workspace composes the approved operator shell around persisted audit cont
   assert.match(app, /publicationReadiness/);
 });
 
+test('operator workspace exposes a logout control that calls the session logout endpoint', async () => {
+  const app = await readFile(new URL('../app.js', import.meta.url), 'utf8');
+
+  assert.match(app, /data-action=["']logout["']/i);
+  assert.match(app, />Log out</i);
+  assert.match(app, /fetch\(['"]\/api\/auth\/logout['"],\s*\{\s*method:\s*['"]POST['"]/);
+  assert.match(app, /window\.location\.assign\(['"]\/login\.html['"]\)/);
+});
+
 test('workspace mobile audit navigation exposes every section without a horizontal strip', async () => {
   const css = await readFile(new URL('../workspace-polish.css', import.meta.url), 'utf8');
 

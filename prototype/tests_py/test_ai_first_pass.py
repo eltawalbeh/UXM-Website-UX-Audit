@@ -46,7 +46,7 @@ class AiFirstPassApiTests(unittest.TestCase):
             return {"status": "ready", "candidates": [CANDIDATE]}
 
         from backend.api_server import create_server
-        self.server = create_server(self.repo, static_root, host="127.0.0.1", port=0, ai_first_pass_explorer=explorer, ai_first_pass_drafter=drafter)
+        self.server = create_server(self.repo, static_root, host="127.0.0.1", port=0, ai_first_pass_explorer=explorer, ai_first_pass_drafter=drafter, require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         self.base_url = f"http://127.0.0.1:{self.server.server_port}"
@@ -100,7 +100,7 @@ class AiFirstPassApiTests(unittest.TestCase):
             received.append(scope_request)
             return {"status": "ready", "scope": {"requestedUrl": url, "visited": [{"url": "https://public.example/pricing", "title": "Pricing", "textExcerpt": "Plans", "capturedAt": "2026-07-15T12:00:00Z", "capture": {"kind": "text", "url": "https://public.example/pricing"}}], "skipped": []}}
         candidate = {**CANDIDATE, "pageUrl": "https://public.example/pricing", "pageName": "Pricing", "journey": "Pricing evaluation", "checkpointId": "CONV-01", "evidenceRefs": ["https://public.example/pricing"]}
-        self.server = create_server(self.repo, Path(self.temp.name) / "static", host="127.0.0.1", port=0, ai_first_pass_explorer=scoped_explorer, ai_first_pass_drafter=lambda context: {"status": "ready", "candidates": [candidate]})
+        self.server = create_server(self.repo, Path(self.temp.name) / "static", host="127.0.0.1", port=0, ai_first_pass_explorer=scoped_explorer, ai_first_pass_drafter=lambda context: {"status": "ready", "candidates": [candidate]}, require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True); self.thread.start(); self.base_url = f"http://127.0.0.1:{self.server.server_port}"
 
         status, body = self.post_json("/api/audits/audit_demo/ai-first-pass", {"url": "https://public.example/", "productType": "saas_digital_product", "bundle": "selected_pages", "selectedPages": ["/pricing"]})
@@ -121,7 +121,7 @@ class AiFirstPassApiTests(unittest.TestCase):
         from backend.api_server import create_server
         self.server = create_server(self.repo, Path(self.temp.name) / "static", host="127.0.0.1", port=0,
                                     ai_first_pass_explorer=lambda url, scope: {"status": "unavailable", "message": "Could not safely fetch public pages."},
-                                    ai_first_pass_drafter=lambda context: self.fail("model must not be called"))
+                                    ai_first_pass_drafter=lambda context: self.fail("model must not be called"), require_auth=False)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True); self.thread.start(); self.base_url = f"http://127.0.0.1:{self.server.server_port}"
         status, body = self.post_json("/api/audits/audit_demo/ai-first-pass", {"url": "https://public.example/", "productType": "government_civic", "bundle": "full_website"})
         self.assertEqual(status, 503)

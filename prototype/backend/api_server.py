@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import json
 import mimetypes
 import re
@@ -15,6 +16,7 @@ from urllib.parse import parse_qs, urlparse
 from backend.audit_copilot import build_context, configured_drafter
 from backend.audit_templates import get_audit_template, load_audit_templates
 from backend.ai_first_pass import build_first_pass_context, configured_first_pass_drafter, detect_product_type, explore_public_pages, finalize_scope, safe_public_url, scope_request
+from backend.auth import SessionStore, session_cookie, session_token, verify_credentials
 from backend.storage import AuditRepository
 
 
@@ -39,13 +41,19 @@ def chrome_pdf_exporter(base_url: str):
     return export
 
 
-def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: int = 4173, pdf_exporter=None, ai_drafter=None, ai_first_pass_explorer=None, ai_first_pass_drafter=None):
+def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: int = 4173, pdf_exporter=None, ai_drafter=None, ai_first_pass_explorer=None, ai_first_pass_drafter=None, require_auth: bool = True):
     static_root = Path(static_root).resolve()
+    sessions = SessionStore()
     repository.backfill_operations_from_audits()
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             path = urlparse(self.path).path
+            if path == "/api/auth/session":
+                self._json(200, {"authenticated": self._authenticated()})
+                return
+            if path in {"/api/clients", "/api/projects", "/api/audit-templates", "/api/audits"} and not self._require_operator():
+                return
             if path == "/api/clients":
                 self._json(200, repository.list_clients())
                 return
@@ -61,6 +69,8 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
                 return
             readiness_match = re.fullmatch(r"/api/audits/([^/]+)/readiness", path)
             if readiness_match:
+                if not self._require_operator():
+                    return
                 try:
                     locale = parse_qs(urlparse(self.path).query).get("locale", [None])[0]
                     self._json(200, repository.publication_readiness(readiness_match.group(1), locale))
@@ -68,6 +78,8 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
                     self._json(404, {"error": str(error)})
                 return
             if path.startswith("/api/audits/"):
+                if not self._require_operator():
+                    return
                 audit = repository.get_audit(path.removeprefix("/api/audits/"))
                 if audit is None:
                     self._json(404, {"error": "Audit not found"})
@@ -78,6 +90,29 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
 
         def do_POST(self):
             path = urlparse(self.path).path
+            if path == "/api/auth/login":
+                try:
+                    credentials = self._request_json()
+                    if not isinstance(credentials, dict):
+                        raise ValueError("Login request must be a JSON object")
+                    email = credentials.get("email", "")
+                    password = credentials.get("password", "")
+                    if not isinstance(email, str) or not isinstance(password, str):
+                        raise ValueError("Email and password are required")
+                except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+                    self._json(400, {"error": str(error)})
+                    return
+                if not verify_credentials(email, password):
+                    self._json(401, {"error": "Invalid email or password"})
+                    return
+                self._json(200, {"authenticated": True}, {"Set-Cookie": self._session_cookie(sessions.issue())})
+                return
+            if path == "/api/auth/logout":
+                sessions.revoke(session_token(self.headers.get("Cookie")))
+                self._empty(204, {"Set-Cookie": self._session_cookie("", max_age=0)})
+                return
+            if not self._require_operator():
+                return
             if path == "/api/backups":
                 backup = repository.backup()
                 self._json(201, {"path": str(backup)})
@@ -302,20 +337,62 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
                 return
             self._json(201, evidence)
 
+        def _authenticated(self):
+            return not require_auth or sessions.active(session_token(self.headers.get("Cookie")))
+
+        def _session_cookie(self, token: str, max_age: int = 8 * 60 * 60) -> str:
+            return session_cookie(token, max_age=max_age, secure=not self._is_loopback_http())
+
+        def _is_loopback_http(self) -> bool:
+            if self.headers.get("X-Forwarded-Proto", "").lower() == "https":
+                return False
+            host = self.headers.get("Host", "")
+            if host.startswith("["):
+                hostname = host[1:].split("]", 1)[0]
+            else:
+                hostname = host.split(":", 1)[0]
+            if hostname.lower() == "localhost":
+                return True
+            try:
+                return ipaddress.ip_address(hostname).is_loopback
+            except ValueError:
+                return False
+
+        def _require_operator(self):
+            if self._authenticated():
+                return True
+            self._json(401, {"error": "Operator authentication required"})
+            return False
+
         def _request_json(self):
             length = int(self.headers.get("Content-Length", "0"))
             return json.loads(self.rfile.read(length).decode("utf-8"))
 
-        def _json(self, status: int, body):
+        def _json(self, status: int, body, headers=None):
             encoded = json.dumps(body, ensure_ascii=False).encode("utf-8")
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(encoded)))
+            for name, value in (headers or {}).items():
+                self.send_header(name, value)
             self.end_headers()
             self.wfile.write(encoded)
 
+        def _empty(self, status: int, headers=None):
+            self.send_response(status)
+            for name, value in (headers or {}).items():
+                self.send_header(name, value)
+            self.end_headers()
+
         def _static(self, request_path: str):
             relative_path = "index.html" if request_path == "/" else request_path.lstrip("/")
+            if self._is_never_served_static(relative_path):
+                self.send_error(404, "Not found")
+                return
+            if relative_path in {"workspace.html", "operations.html", "templates.html"} and not self._require_operator():
+                return
+            if self._is_sensitive_static(relative_path) and not self._require_operator():
+                return
             target = (static_root / relative_path).resolve()
             if static_root not in target.parents and target != static_root:
                 self.send_error(403, "Forbidden")
@@ -335,6 +412,20 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             except (BrokenPipeError, ConnectionAbortedError):
                 # Browsers may cancel a static request during navigation; this must not crash a request thread.
                 return
+
+        @staticmethod
+        def _is_never_served_static(relative_path: str) -> bool:
+            return any(part.lower().startswith(".env") for part in Path(relative_path).parts)
+
+        @staticmethod
+        def _is_sensitive_static(relative_path: str) -> bool:
+            path = Path(relative_path)
+            protected_roots = {"artifacts", "backend", "data", "evidence"}
+            protected_suffixes = {".db", ".key", ".pem", ".sqlite", ".sqlite3"}
+            return (
+                bool(path.parts and path.parts[0].lower() in protected_roots)
+                or path.suffix.lower() in protected_suffixes
+            )
 
         def log_message(self, format, *args):
             return

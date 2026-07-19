@@ -14,9 +14,9 @@ if not exist ".venv\Scripts\python.exe" (
 
 if not exist ".env" (
   copy /y ".env.example" ".env" >nul
-  echo A local AI configuration file was created: prototype\.env
-  echo Open it, add your NVIDIA API key after UXM_AI_API_KEY=, save it, then run this launcher again.
-  start "UXM AI configuration" notepad.exe ".env"
+  echo A local configuration file was created: prototype\.env
+  echo Add your AI and operator credentials, save it, then run this launcher again.
+  start "UXM configuration" notepad.exe ".env"
   pause
   exit /b 1
 )
@@ -24,7 +24,19 @@ if not exist ".env" (
 for /f "usebackq eol=# tokens=1,* delims==" %%A in (".env") do set "%%A=%%B"
 if "%UXM_AI_API_KEY%"=="" (
   echo UXM_AI_API_KEY is empty in prototype\.env.
-  start "UXM AI configuration" notepad.exe ".env"
+  start "UXM configuration" notepad.exe ".env"
+  pause
+  exit /b 1
+)
+if "%UXM_OPERATOR_EMAIL%"=="" (
+  echo UXM_OPERATOR_EMAIL is empty in prototype\.env.
+  start "UXM configuration" notepad.exe ".env"
+  pause
+  exit /b 1
+)
+if "%UXM_OPERATOR_PASSWORD%"=="" (
+  echo UXM_OPERATOR_PASSWORD is empty in prototype\.env.
+  start "UXM configuration" notepad.exe ".env"
   pause
   exit /b 1
 )
@@ -45,5 +57,5 @@ if errorlevel 1 (
   exit /b 1
 )
 
-start "UXM Audit" http://127.0.0.1:4173/workspace.html
+start "UXM Audit" http://127.0.0.1:4173/login.html
 ".venv\Scripts\python.exe" -m backend.api_server

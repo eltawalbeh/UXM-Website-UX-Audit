@@ -76,9 +76,21 @@ test('public landing exposes the evidence-led conversion journey without fabrica
 });
 
 
-test('local operator launcher opens the canonical workspace route', async () => {
+test('local operator launcher opens the canonical login route', async () => {
   const launcher = await read('../START-UXM-AUDIT.bat');
-  assert.match(launcher, /http:\/\/127\.0\.0\.1:4173\/workspace\.html/i);
+  assert.match(launcher, /http:\/\/127\.0\.0\.1:4173\/login\.html/i);
+});
+
+test('login page submits operator credentials to the real session endpoint', async () => {
+  const [login, script] = await Promise.all([read('../login.html'), read('../login.js')]);
+
+  assert.match(login, /name=["']email["']/i);
+  assert.match(login, /name=["']password["']/i);
+  assert.doesNotMatch(login, /\bdisabled\b/i);
+  assert.match(login, /src=["']login\.js["']/i);
+  assert.match(script, /fetch\(['"]\/api\/auth\/login['"]/);
+  assert.match(script, /credentials:\s*['"]same-origin['"]/);
+  assert.match(script, /window\.location\.assign\(['"]\/workspace\.html['"]\)/);
 });
 
 test('workspace mobile navigation keeps every operator control visible without an overflow strip', async () => {
