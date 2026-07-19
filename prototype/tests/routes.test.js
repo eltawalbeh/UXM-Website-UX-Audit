@@ -55,6 +55,27 @@ test('public routes do not boot the operator application', async () => {
   assert.doesNotMatch([landing, login, request, workspace, report].join('\n'), /client portal/i);
 });
 
+test('public landing exposes the evidence-led conversion journey without fabricated proof', async () => {
+  const landing = await read('../index.html');
+
+  assert.match(landing, /How it works/);
+  assert.match(landing, /Services/);
+  assert.match(landing, /Methodology/);
+  assert.match(landing, /Selected work available on request/);
+  assert.match(landing, /Discover with AI/);
+  assert.match(landing, /Validate with experts/);
+  assert.match(landing, /Prove with evidence/);
+  assert.match(landing, /Deliver with confidence/);
+  assert.match(landing, /src=["']landing\.js["']/i);
+  assert.match(landing, /data-i18n=["']request["']/i);
+  assert.match(landing, /data-i18n=["']how["']/i);
+  const landingScript = await read('../landing.js');
+  assert.match(landingScript, /locale=ar/);
+  assert.match(landingScript, /document\.documentElement\.dir\s*=\s*['"]rtl['"]/);
+  assert.match(landingScript, /طلب تدقيق/);
+});
+
+
 test('local operator launcher opens the canonical workspace route', async () => {
   const launcher = await read('../START-UXM-AUDIT.bat');
   assert.match(launcher, /http:\/\/127\.0\.0\.1:4173\/workspace\.html/i);

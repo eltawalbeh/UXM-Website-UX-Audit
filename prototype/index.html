@@ -11,35 +11,34 @@
   <link rel="stylesheet" href="src/ui/components.css">
   <link rel="stylesheet" href="route-shell.css">
 </head>
-<body class="route-page" data-surface="public">
+<body class="route-page public-landing" data-surface="public">
   <header class="route-header route-shell">
     <a class="route-brand" href="/" aria-label="UX Mosaic home"><img src="assets/brand/uxmosaic-horizontal-dark.png" alt="UX Mosaic"></a>
     <nav class="route-header__actions" aria-label="Primary navigation">
+      <a class="route-link" href="#how-it-works" data-i18n="how">How it works</a>
+      <a class="route-link" href="#services">Services</a>
+      <a class="route-link" href="#methodology">Methodology</a>
       <a class="route-link" href="login.html">Operator login</a>
-      <a class="uxm-button uxm-button--primary" href="request-audit.html">Request an audit</a>
+      <a class="uxm-button uxm-button--primary" href="request-audit.html" data-i18n="request">Request an audit</a>
     </nav>
   </header>
-  <main class="route-shell">
-    <section class="route-hero">
+  <main>
+    <section class="route-hero route-shell">
       <div>
         <p class="route-kicker">Evidence-led UX Audit System</p>
         <h1>Find what blocks the experience. Prove what needs to change.</h1>
         <p class="route-lede">UX Mosaic turns observed experience issues into human-validated findings, clear priorities, and delivery-ready reports.</p>
-        <div class="route-actions">
-          <a class="uxm-button uxm-button--primary uxm-button--large" href="request-audit.html">Request an audit</a>
-          <a class="uxm-button uxm-button--ghost uxm-button--large" href="login.html">Operator login</a>
-        </div>
+        <div class="route-actions"><a class="uxm-button uxm-button--primary uxm-button--large" href="request-audit.html" data-i18n="request">Request an audit</a></div>
       </div>
-      <aside class="route-principle" aria-label="Audit workflow">
-        <strong>Evidence controls delivery.</strong>
-        <ol class="route-flow">
-          <li><b>1</b><span>AI discovers review candidates.</span></li>
-          <li><b>2</b><span>A human validates the finding and evidence.</span></li>
-          <li><b>3</b><span>Readiness controls what reaches the report.</span></li>
-        </ol>
-      </aside>
+      <aside class="route-principle" aria-label="Evidence-led audit standard"><strong>Evidence controls delivery.</strong><p>Every published recommendation remains traceable to a reviewed observation, its scope, and its supporting evidence.</p></aside>
     </section>
+    <section id="how-it-works" class="public-section public-section--midnight"><div class="route-shell"><p class="route-kicker">How it works</p><h2>From public experience to a decision-ready delivery.</h2><ol class="public-stages"><li><b>01</b><strong>Discover with AI</strong><span>AI surfaces review candidates inside the agreed public scope.</span></li><li><b>02</b><strong>Validate with experts</strong><span>Human review separates observations from assumptions.</span></li><li><b>03</b><strong>Prove with evidence</strong><span>Approved findings link to evidence, context, and recommendation.</span></li><li><b>04</b><strong>Deliver with confidence</strong><span>Readiness gates protect what reaches the report and PDF.</span></li></ol></div></section>
+    <section id="services" class="public-section route-shell"><p class="route-kicker">Services</p><div class="public-editorial-list"><h2>Audit work that makes the next decision clearer.</h2><div><article><span>01</span><h3>Website UX Audit</h3><p>Evidence-led review of critical public journeys, content, interfaces, and recovery states.</p></article><article><span>02</span><h3>Service Experience Review</h3><p>Focused diagnosis for civic, customer-service, and digital service entry points.</p></article><article><span>03</span><h3>Delivery-ready Reporting</h3><p>Clear priorities, annotated evidence, and bilingual decision documents.</p></article></div></div></section>
+    <section id="methodology" class="public-section public-section--tint"><div class="route-shell public-method"><div><p class="route-kicker">Methodology</p><h2>Measured. Human-approved. Honest about what is not verified.</h2></div><div class="public-method__rules"><p><b>AI candidate</b> is not an approved finding.</p><p><b>Not verified</b> is not a failed checkpoint.</p><p><b>Evidence complete</b> is required before delivery.</p></div></div></section>
+    <section class="public-section route-shell"><p class="route-kicker">Selected work</p><div class="public-safe-state"><h2>Selected work available on request.</h2><p>Client examples and outcomes are shared only when publication has been approved.</p></div></section>
+    <section class="public-final-cta"><div class="route-shell"><p class="route-kicker">Start with the experience you need to understand.</p><h2>Make the next UX decision evidence-led.</h2><a class="uxm-button uxm-button--primary uxm-button--large" href="request-audit.html" data-i18n="request">Request an audit</a></div></section>
   </main>
   <footer class="route-footer route-shell"><span>UX Mosaic</span><span>Evidence-led UX Audit System</span></footer>
+  <script type="module" src="landing.js"></script>
 </body>
 </html>

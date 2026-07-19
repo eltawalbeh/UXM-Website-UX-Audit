@@ -57,11 +57,20 @@ body.route-page {
 .route-form .uxm-button { width: 100%; }
 .route-form-status { margin: 0; padding: var(--figma-spacing-2xs); border-inline-start: 3px solid var(--figma-brand-primary-muted); background: var(--figma-background-secondary); color: var(--figma-text-secondary); font-size: var(--figma-type-scale-caption); }
 
-@media (max-width: 760px) {
-  .route-shell { width: min(100% - 32px, 1216px); }
-  .route-header { min-height: 72px; align-items: flex-start; padding-block: var(--figma-spacing-xs); }
-  .route-brand img { width: 160px; }
-  .route-hero { grid-template-columns: 1fr; min-height: auto; gap: var(--figma-spacing-xl-md); padding-block: 64px; }
-  .route-hero h1 { font-size: clamp(42px, 13vw, 64px); }
-  .route-footer { flex-direction: column; }
-}
+
+.public-section { padding-block: clamp(72px, 10vw, 136px); }
+.public-section h2, .public-final-cta h2 { max-width: 18ch; margin: 0; font-size: clamp(38px, 5.5vw, 72px); line-height: .98; letter-spacing: -1px; }
+.public-section--midnight { background: var(--figma-background-dark); color: var(--figma-text-inverse); }
+.public-section--midnight h2, .public-final-cta h2 { color: inherit; }
+.public-section--midnight .route-kicker { color: var(--figma-brand-primary-muted); }
+.public-stages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: clamp(40px, 6vw, 80px) 0 0; padding: 0; background: color-mix(in srgb, var(--figma-text-inverse) 24%, transparent); list-style: none; }
+.public-stages li { min-height: 230px; padding: var(--figma-spacing-lg); background: var(--figma-background-dark); }
+.public-stages b, .public-editorial-list article span { display:block; color: var(--figma-brand-primary-muted); font-size: var(--figma-type-scale-overline); letter-spacing: var(--figma-letter-spacing-wider); }
+.public-stages strong { display:block; margin: 48px 0 var(--figma-spacing-2xs); font-size: var(--figma-type-scale-heading-3); }
+.public-stages span { color: color-mix(in srgb, var(--figma-text-inverse) 72%, transparent); }
+.public-editorial-list { display:grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(32px, 10vw, 140px); }
+.public-editorial-list article { display:grid; grid-template-columns: 48px 1fr; column-gap: var(--figma-spacing-xs); padding-block: var(--figma-spacing-md); border-block-start:1px solid var(--figma-border-subtle); }
+.public-editorial-list article span { grid-row: span 2; }.public-editorial-list h3,.public-editorial-list p { margin:0; }.public-editorial-list p { color:var(--figma-text-secondary); margin-top:var(--figma-spacing-3xs); }
+.public-section--tint { background:var(--figma-background-secondary); }.public-method { display:grid; grid-template-columns:1fr 1fr; gap:clamp(32px,10vw,140px); }.public-method__rules { border-inline-start:3px solid var(--figma-brand-primary-muted); padding-inline-start:var(--figma-spacing-md); }.public-method__rules p { margin:0; padding-block:var(--figma-spacing-xs); border-block-end:1px solid var(--figma-border-subtle); }.public-safe-state { border-block:1px solid var(--figma-border-subtle); padding-block:var(--figma-spacing-xl-md); }.public-safe-state p { color:var(--figma-text-secondary); }.public-final-cta { padding-block:clamp(80px,12vw,160px); background:var(--figma-background-dark); color:var(--figma-text-inverse); }.public-final-cta .route-kicker { color:var(--figma-brand-primary-muted); }.public-final-cta .uxm-button { margin-top:var(--figma-spacing-lg); }
+
+@media (max-width: 760px) { .route-shell { width: min(100% - 32px, 1216px); } .route-header { min-height:72px; align-items:flex-start; padding-block:var(--figma-spacing-xs); } .route-brand img { width:130px; } .route-header__actions { justify-content:flex-end; } .route-header__actions .route-link:not([href="login.html"]) { display:none; } .route-hero { grid-template-columns:1fr; min-height:auto; gap:var(--figma-spacing-xl-md); padding-block:64px; } .route-hero h1 { font-size:clamp(42px,13vw,64px); } .route-footer { flex-direction:column; } .public-stages,.public-editorial-list,.public-method { grid-template-columns:1fr; }.public-stages { gap:1px; }.public-stages li { min-height:auto; }.public-stages strong { margin-top:var(--figma-spacing-md); } }
