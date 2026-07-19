@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import sqlite3
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlparse
 
 
 class AuditRepository:
@@ -67,10 +69,115 @@ class AuditRepository:
                     project_id TEXT REFERENCES projects(id) ON DELETE SET NULL
                 )
             """)
+            connection.execute("""
+                CREATE TABLE IF NOT EXISTS audit_requests (
+                    id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, company TEXT NOT NULL,
+                    website TEXT NOT NULL, service TEXT NOT NULL, scope_note TEXT NOT NULL,
+                    preferred_contact TEXT NOT NULL, locale TEXT NOT NULL DEFAULT 'en',
+                    fingerprint TEXT NOT NULL UNIQUE, status TEXT NOT NULL DEFAULT 'received',
+                    client_id TEXT REFERENCES clients(id) ON DELETE RESTRICT,
+                    project_id TEXT REFERENCES projects(id) ON DELETE RESTRICT,
+                    audit_id TEXT REFERENCES audits(id) ON DELETE RESTRICT,
+                    created_at TEXT NOT NULL, converted_at TEXT
+                )
+            """)
             columns = {row["name"] for row in connection.execute("PRAGMA table_info(audits)").fetchall()}
             if "project_id" not in columns:
                 connection.execute("ALTER TABLE audits ADD COLUMN project_id TEXT REFERENCES projects(id) ON DELETE SET NULL")
             connection.commit()
+        finally:
+            connection.close()
+
+    @staticmethod
+    def _request_value(data: dict, field: str, label: str, limit: int = 1000) -> str:
+        value = data.get(field, "")
+        if not isinstance(value, str) or not (value := value.strip()):
+            raise ValueError(f"{label} is required")
+        if len(value) > limit:
+            raise ValueError(f"{label} is too long")
+        return value
+
+    def _validated_audit_request(self, data: dict) -> dict:
+        if not isinstance(data, dict):
+            raise ValueError("Request must be a JSON object")
+        name = self._request_value(data, "name", "Name", 160)
+        email = self._request_value(data, "email", "Email", 254).lower()
+        if "@" not in email or email.startswith("@") or email.endswith("@"):
+            raise ValueError("Email must be valid")
+        company = self._request_value(data, "company", "Company or organization", 200)
+        website = self._request_value(data, "website", "Website URL", 2048)
+        parsed = urlparse(website)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            raise ValueError("Website URL must start with http:// or https://")
+        service = self._request_value(data, "service", "Audit need or service", 200)
+        scope_note = self._request_value(data, "scopeNote", "Scope note", 4000)
+        preferred_contact = self._request_value(data, "preferredContact", "Preferred contact", 100)
+        locale = str(data.get("locale") or "en").strip().lower()
+        fingerprint = hashlib.sha256(f"{email}|{website.casefold()}|{service.casefold()}".encode("utf-8")).hexdigest()
+        return {"name": name, "email": email, "company": company, "website": website, "service": service,
+                "scopeNote": scope_note, "preferredContact": preferred_contact, "locale": locale if locale in {"en", "ar"} else "en", "fingerprint": fingerprint}
+
+    @staticmethod
+    def _request_record(row) -> dict:
+        return {"id": row["id"], "name": row["name"], "email": row["email"], "company": row["company"], "website": row["website"], "service": row["service"], "scopeNote": row["scope_note"], "preferredContact": row["preferred_contact"], "locale": row["locale"], "status": row["status"], "clientId": row["client_id"], "projectId": row["project_id"], "auditId": row["audit_id"], "createdAt": row["created_at"], "convertedAt": row["converted_at"]}
+
+    def create_audit_request(self, data: dict) -> tuple[dict | None, bool]:
+        # Honeypot responses are deliberately indistinguishable from duplicate confirmations.
+        if isinstance(data, dict) and str(data.get("contactWebsite") or "").strip():
+            return None, True
+        request = self._validated_audit_request(data)
+        now, request_id = datetime.now(timezone.utc).isoformat(), f"request_{uuid.uuid4().hex[:16]}"
+        connection = self._connect()
+        try:
+            try:
+                connection.execute("INSERT INTO audit_requests (id,name,email,company,website,service,scope_note,preferred_contact,locale,fingerprint,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", (request_id, request["name"], request["email"], request["company"], request["website"], request["service"], request["scopeNote"], request["preferredContact"], request["locale"], request["fingerprint"], "received", now))
+                connection.commit()
+                row = connection.execute("SELECT * FROM audit_requests WHERE id = ?", (request_id,)).fetchone()
+                return self._request_record(row), False
+            except sqlite3.IntegrityError:
+                row = connection.execute("SELECT * FROM audit_requests WHERE fingerprint = ?", (request["fingerprint"],)).fetchone()
+                return self._request_record(row), True
+        finally:
+            connection.close()
+
+    def list_request_audits(self) -> list[dict]:
+        connection = self._connect()
+        try:
+            rows = connection.execute("SELECT * FROM audit_requests ORDER BY created_at DESC").fetchall()
+        finally:
+            connection.close()
+        return [self._request_record(row) for row in rows]
+
+    def convert_audit_request(self, request_id: str) -> dict:
+        connection = self._connect()
+        try:
+            connection.execute("BEGIN IMMEDIATE")
+            claimed = connection.execute("UPDATE audit_requests SET status = 'converting' WHERE id = ? AND status = 'received'", (request_id,))
+            if claimed.rowcount != 1:
+                request = connection.execute("SELECT status FROM audit_requests WHERE id = ?", (request_id,)).fetchone()
+                connection.rollback()
+                if request is None:
+                    raise LookupError("Audit request not found")
+                raise ValueError("Audit request has already been converted")
+            request = connection.execute("SELECT * FROM audit_requests WHERE id = ?", (request_id,)).fetchone()
+            now = datetime.now(timezone.utc).isoformat()
+            client_id, project_id, audit_id = f"client_{uuid.uuid4().hex[:12]}", f"project_{uuid.uuid4().hex[:12]}", f"audit_{uuid.uuid4().hex[:16]}"
+            contact_notes = f"Requested service: {request['service']}\nPreferred contact: {request['preferred_contact']}\nScope note: {request['scope_note']}"
+            connection.execute("INSERT INTO clients (id,name,contact_name,email,phone,notes,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?)", (client_id, request["company"], request["name"], request["email"], "", contact_notes, "active", now, now))
+            project_name = f"{request['company']} — {request['service']}"
+            connection.execute("INSERT INTO projects (id,client_id,name,base_url,product_type,owner,status,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?)", (project_id, client_id, project_name, request["website"], "", "", "draft", now, now))
+            audit = {"id": audit_id, "client": request["company"], "website": project_name, "url": request["website"], "locale": request["locale"], "source": f"request:{request_id}", "projectId": project_id, "service": request["service"], "scope": {"requestNote": request["scope_note"], "status": "awaiting_operator_scope"}, "findings": [], "assessments": {}, "status": "draft"}
+            connection.execute("INSERT INTO audits (id,client,url,locale,source,body,updated_at,project_id) VALUES (?,?,?,?,?,?,?,?)", (audit_id, audit["client"], audit["url"], audit["locale"], audit["source"], json.dumps(audit, ensure_ascii=False), now, project_id))
+            converted_count = connection.execute("UPDATE audit_requests SET status = ?, client_id = ?, project_id = ?, audit_id = ?, converted_at = ? WHERE id = ? AND status = 'converting'", ("converted", client_id, project_id, audit_id, now, request_id)).rowcount
+            if converted_count != 1:
+                raise RuntimeError("Audit request conversion could not be finalized")
+            connection.commit()
+            converted = connection.execute("SELECT * FROM audit_requests WHERE id = ?", (request_id,)).fetchone()
+            return {"request": self._request_record(converted), "client": self.get_client(client_id), "project": self.get_project(project_id), "audit": audit}
+        except Exception:
+            if connection.in_transaction:
+                connection.rollback()
+            raise
         finally:
             connection.close()
 

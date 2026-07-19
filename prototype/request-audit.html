@@ -13,21 +13,27 @@
 <body class="route-page" data-surface="request-audit">
   <header class="route-header route-shell">
     <a class="route-brand" href="/" aria-label="UX Mosaic home"><img src="assets/brand/uxmosaic-horizontal-dark.png" alt="UX Mosaic"></a>
-    <a class="route-link" href="/">Back to website</a>
+    <div><button class="route-link" id="locale-toggle" type="button">العربية</button> <a class="route-link" href="/" data-i18n="back">Back to website</a></div>
   </header>
   <main class="route-stage route-shell">
     <section class="route-panel" aria-labelledby="request-title">
-      <p class="route-kicker">Start with a clear scope</p>
-      <h1 id="request-title">Request an audit</h1>
-      <p class="route-panel__intro">Tell UX Mosaic where the experience needs attention. Scope and access are confirmed before any audit begins.</p>
-      <form class="route-form" aria-describedby="request-status">
-        <label class="uxm-field"><span class="uxm-field__label">Name</span><input class="uxm-input" autocomplete="name" disabled></label>
-        <label class="uxm-field"><span class="uxm-field__label">Work email</span><input class="uxm-input" type="email" autocomplete="email" disabled></label>
-        <label class="uxm-field"><span class="uxm-field__label">Website URL</span><input class="uxm-input" type="url" inputmode="url" disabled></label>
-        <button class="uxm-button uxm-button--primary uxm-button--large" type="submit" disabled>Continue request</button>
-        <p class="route-form-status" id="request-status">Secure request submission will be connected in its dedicated product slice. No information is collected on this route yet.</p>
+      <p class="route-kicker" data-i18n="kicker">Start with a clear scope</p>
+      <h1 id="request-title" data-i18n="title">Request an audit</h1>
+      <p class="route-panel__intro" data-i18n="intro">Tell UX Mosaic where the experience needs attention. Scope and access are confirmed before any audit begins.</p>
+      <form class="route-form" id="request-audit-form" aria-describedby="request-status">
+        <label class="uxm-field"><span class="uxm-field__label" data-i18n="name">Name</span><input class="uxm-input" name="name" autocomplete="name" required maxlength="160"></label>
+        <label class="uxm-field"><span class="uxm-field__label" data-i18n="email">Work email</span><input class="uxm-input" name="email" type="email" autocomplete="email" required maxlength="254"></label>
+        <label class="uxm-field"><span class="uxm-field__label" data-i18n="company">Company or organization</span><input class="uxm-input" name="company" autocomplete="organization" required maxlength="200"></label>
+        <label class="uxm-field"><span class="uxm-field__label" data-i18n="website">Website URL</span><input class="uxm-input" name="website" type="url" inputmode="url" placeholder="https://example.com" required maxlength="2048"></label>
+        <label class="uxm-field"><span class="uxm-field__label" data-i18n="service">Audit need or service</span><select class="uxm-input" name="service" required><option value="" data-i18n="choose">Choose one</option><option value="UX audit" data-i18n="uxAudit">UX audit</option><option value="Accessibility review" data-i18n="accessibility">Accessibility review</option><option value="Expert review" data-i18n="expert">Expert review</option><option value="Other" data-i18n="other">Other</option></select></label>
+        <label class="uxm-field"><span class="uxm-field__label" data-i18n="scope">Scope note</span><textarea class="uxm-input" name="scopeNote" required maxlength="4000" rows="4" data-i18n-placeholder="scopePlaceholder" placeholder="What journey, product area, or concern should we review?"></textarea></label>
+        <label class="uxm-field"><span class="uxm-field__label" data-i18n="contact">Preferred contact</span><select class="uxm-input" name="preferredContact" required><option value="" data-i18n="choose">Choose one</option><option value="Email" data-i18n="emailOption">Email</option><option value="Phone" data-i18n="phone">Phone</option><option value="Video call" data-i18n="video">Video call</option></select></label>
+        <div aria-hidden="true" style="position:absolute;left:-10000px"><label>Website confirmation<input name="contactWebsite" tabindex="-1" autocomplete="off"></label></div>
+        <button class="uxm-button uxm-button--primary uxm-button--large" type="submit" data-i18n="submit">Send request</button>
+        <p class="route-form-status" id="request-status" role="status" aria-live="polite" data-i18n="privacy">A human operator reviews every request before an audit is created.</p>
       </form>
     </section>
   </main>
+  <script src="request-audit.js"></script>
 </body>
 </html>

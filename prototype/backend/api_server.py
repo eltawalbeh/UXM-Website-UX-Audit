@@ -7,6 +7,8 @@ import mimetypes
 import re
 import shutil
 import subprocess
+import threading
+import time
 import uuid
 from datetime import datetime
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -18,6 +20,11 @@ from backend.audit_templates import get_audit_template, load_audit_templates
 from backend.ai_first_pass import build_first_pass_context, configured_first_pass_drafter, detect_product_type, explore_public_pages, finalize_scope, safe_public_url, scope_request
 from backend.auth import SessionStore, session_cookie, session_token, verify_credentials
 from backend.storage import AuditRepository
+
+
+MAX_PUBLIC_REQUEST_BYTES = 64 * 1024
+PUBLIC_REQUEST_RATE_LIMIT = 5
+PUBLIC_REQUEST_RATE_WINDOW_SECONDS = 60
 
 
 def chrome_pdf_exporter(base_url: str):
@@ -45,12 +52,30 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
     static_root = Path(static_root).resolve()
     sessions = SessionStore()
     repository.backfill_operations_from_audits()
+    public_request_attempts: dict[str, list[float]] = {}
+    public_request_lock = threading.Lock()
+
+    def allow_public_request(client_ip: str) -> bool:
+        now = time.monotonic()
+        with public_request_lock:
+            attempts = [attempt for attempt in public_request_attempts.get(client_ip, []) if now - attempt < PUBLIC_REQUEST_RATE_WINDOW_SECONDS]
+            if len(attempts) >= PUBLIC_REQUEST_RATE_LIMIT:
+                public_request_attempts[client_ip] = attempts
+                return False
+            attempts.append(now)
+            public_request_attempts[client_ip] = attempts
+            return True
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             path = urlparse(self.path).path
             if path == "/api/auth/session":
                 self._json(200, {"authenticated": self._authenticated()})
+                return
+            if path == "/api/request-audits":
+                if not self._require_operator():
+                    return
+                self._json(200, repository.list_request_audits())
                 return
             if path in {"/api/clients", "/api/projects", "/api/audit-templates", "/api/audits"} and not self._require_operator():
                 return
@@ -111,7 +136,28 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
                 sessions.revoke(session_token(self.headers.get("Cookie")))
                 self._empty(204, {"Set-Cookie": self._session_cookie("", max_age=0)})
                 return
+            if path == "/api/request-audits":
+                if not allow_public_request(self.client_address[0]):
+                    self._json(429, {"error": "Please try again later."})
+                    return
+                try:
+                    repository.create_audit_request(self._request_json(max_bytes=MAX_PUBLIC_REQUEST_BYTES))
+                    self._json(202, {"status": "received", "message": "Your request has been received. No audit has started; an operator will review the scope first."})
+                except OverflowError:
+                    self._json(413, {"error": "Request body is too large"})
+                except (ValueError, json.JSONDecodeError, UnicodeDecodeError) as error:
+                    self._json(400, {"error": str(error)})
+                return
             if not self._require_operator():
+                return
+            intake_match = re.fullmatch(r"/api/request-audits/([^/]+)/create-audit", path)
+            if intake_match:
+                try:
+                    self._json(201, repository.convert_audit_request(intake_match.group(1)))
+                except LookupError as error:
+                    self._json(404, {"error": str(error)})
+                except ValueError as error:
+                    self._json(409, {"error": str(error)})
                 return
             if path == "/api/backups":
                 backup = repository.backup()
@@ -364,8 +410,15 @@ def create_server(repository, static_root: Path, host: str = "127.0.0.1", port: 
             self._json(401, {"error": "Operator authentication required"})
             return False
 
-        def _request_json(self):
-            length = int(self.headers.get("Content-Length", "0"))
+        def _request_json(self, max_bytes: int | None = None):
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+            except ValueError as error:
+                raise ValueError("Invalid Content-Length") from error
+            if length < 0:
+                raise ValueError("Invalid Content-Length")
+            if max_bytes is not None and length > max_bytes:
+                raise OverflowError("Request body is too large")
             return json.loads(self.rfile.read(length).decode("utf-8"))
 
         def _json(self, status: int, body, headers=None):
