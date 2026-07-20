@@ -34,7 +34,8 @@ test('workspace composes the approved operator shell around persisted audit cont
   assert.match(app, /workspace-rail/);
   assert.match(app, /audit-context-header/);
   assert.match(app, /audit-subnav/);
-  assert.match(app, /Portfolio/);
+  assert.match(app, /Operations/);
+  assert.match(app, /Audit templates/);
   assert.match(app, /Deliveries/);
   assert.match(app, /Scope & Pages/);
   assert.match(app, /Score & Priorities/);
@@ -59,7 +60,7 @@ test('workspace mobile audit navigation exposes every section without a horizont
   assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.audit-subnav\s*\{[^}]*grid-template-columns:\s*repeat\(2/is);
 });
 
-test('workspace mobile primary navigation keeps Portfolio through Deliveries visible', async () => {
+test('workspace mobile primary navigation keeps Operations through Deliveries visible', async () => {
   const css = await readFile(new URL('../workspace-polish.css', import.meta.url), 'utf8');
 
   assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.workspace-rail__nav\s*\{[^}]*display:\s*grid[^}]*overflow:\s*visible/is);

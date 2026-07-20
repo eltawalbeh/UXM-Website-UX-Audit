@@ -4,13 +4,15 @@ import { readFile } from 'node:fs/promises';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
 
-test('deep-work surfaces keep criteria, evidence, and human candidate decisions structurally separate', async () => {
+test('deep-work surfaces keep task-first assessment, evidence, and human candidate decisions structurally separate', async () => {
   const [app, css] = await Promise.all([
     read('../app.js'),
     read('../workspace-polish.css'),
   ]);
 
-  assert.match(app, /criteria-workbench/);
+  assert.match(app, /assessment-worklist/);
+  assert.match(app, /assessment-inspector/);
+  assert.match(app, /criteria-library/);
   assert.match(app, /findings-workbench/);
   assert.match(app, /candidate-review/);
   assert.match(app, /candidate-review__decision-bar/);
@@ -19,10 +21,11 @@ test('deep-work surfaces keep criteria, evidence, and human candidate decisions 
   assert.match(app, /Promote for review/);
   assert.match(app, /not changed the score/);
 
-  assert.match(css, /\.criteria-workbench\s*\{[^}]*grid-template-columns:/s);
+  assert.match(css, /\.criteria-task__layout\s*\{[^}]*grid-template-columns:/s);
+  assert.match(css, /\.assessment-inspector\s*\{[^}]*position:\s*sticky/s);
   assert.match(css, /\.findings-workbench\s*\{[^}]*grid-template-columns:/s);
   assert.match(css, /\.candidate-review__decision-bar\s*\{[^}]*position:\s*sticky/s);
-  assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.criteria-workbench\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s);
+  assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.criteria-task__layout\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s);
   assert.match(css, /@media\s*\(max-width:\s*720px\)[\s\S]*\.findings-workbench\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s);
 });
 

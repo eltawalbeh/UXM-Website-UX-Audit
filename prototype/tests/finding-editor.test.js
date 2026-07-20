@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { NEW_FINDING_DRAFT, buildAiReviewedFindingDraft, buildEvidenceCompletePayload, buildFindingDraft, datetimeLocalToUtcIso, nextFindingId, resolveFindingEditorSelection, utcIsoToDatetimeLocal } from '../src/finding-editor.js';
+import { NEW_FINDING_DRAFT, buildAiReviewedFindingDraft, buildEvidenceCompletePayload, buildFindingDraft, datetimeLocalToUtcIso, newFindingStateForCheckpoint, nextFindingId, resolveFindingEditorSelection, utcIsoToDatetimeLocal } from '../src/finding-editor.js';
 
 test('finding draft preserves evidence-first structured metadata without claiming evidence is complete', () => {
   const draft = buildFindingDraft({
@@ -79,6 +79,13 @@ test('New finding selects a blank draft instead of falling back to the first per
   assert.equal(resolveFindingEditorSelection(undefined, persisted).finding.id, 'UXM-001');
   assert.deepEqual(resolveFindingEditorSelection(NEW_FINDING_DRAFT, persisted), { mode: 'new', finding: null });
   assert.equal(resolveFindingEditorSelection('UXM-002', persisted).finding.id, 'UXM-002');
+});
+
+test('creating a linked finding starts a new editor draft at the selected checkpoint', () => {
+  const state = newFindingStateForCheckpoint('FORM-02');
+
+  assert.equal(state.selection, NEW_FINDING_DRAFT);
+  assert.deepEqual(state.pendingFindingDraft, { checkpoint: 'FORM-02' });
 });
 
 test('new finding ID advances past the highest non-sequential persisted UXM ID', () => {

@@ -22,6 +22,13 @@ export function datetimeLocalToUtcIso(value) {
   return Number.isNaN(instant.getTime()) ? '' : instant.toISOString();
 }
 
+export function newFindingStateForCheckpoint(checkpoint) {
+  return {
+    selection: NEW_FINDING_DRAFT,
+    pendingFindingDraft: { checkpoint: String(checkpoint || '').trim() },
+  };
+}
+
 export function resolveFindingEditorSelection(selection, findings) {
   if (selection === NEW_FINDING_DRAFT) return { mode: 'new', finding: null };
   const finding = selection === undefined
