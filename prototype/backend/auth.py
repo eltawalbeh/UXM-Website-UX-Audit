@@ -6,13 +6,18 @@ import secrets
 import threading
 import time
 from http.cookies import CookieError, SimpleCookie
+from pathlib import Path
+
+from backend.local_env import load_operator_env
 
 
 SESSION_COOKIE_NAME = "uxm_operator_session"
 SESSION_TTL_SECONDS = 8 * 60 * 60
+OPERATOR_ENV_PATH = Path(__file__).resolve().parents[1] / '.env'
 
 
 def configured_operator() -> tuple[str, str] | None:
+    load_operator_env(OPERATOR_ENV_PATH)
     email = os.getenv("UXM_OPERATOR_EMAIL", "").strip().lower()
     password = os.getenv("UXM_OPERATOR_PASSWORD", "")
     return (email, password) if email and password else None

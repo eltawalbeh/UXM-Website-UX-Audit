@@ -4,10 +4,13 @@ import { displayScore, scopeIncludedItems, scopeSummary } from './src/display-sc
 import { beginWorkspace, changeAudit, discardChanges, isDirty, markSaved } from './src/workspace-state.js';
 import { removeReviewedCandidate } from './src/ai-first-pass-state.js';
 import { NEW_FINDING_DRAFT, buildAiReviewedFindingDraft, buildEvidenceCompletePayload, buildFindingDraft, newFindingStateForCheckpoint, nextFindingId, resolveFindingEditorSelection, utcIsoToDatetimeLocal } from './src/finding-editor.js';
+import { buildAdminDashboard } from './src/admin-dashboard.js';
 
 let workspace = beginWorkspace(createSeedAudit());
 let audit = workspace.audit;
 let audits = [];
+let dashboardReadiness = {};
+let dashboardDataAvailable = true;
 let apiStatus = 'Loading persisted audits…';
 let publicationReadiness = null;
 let aiDraftState = { context: null, draft: null, message: '' };
@@ -29,7 +32,7 @@ function establishSavedAudit(nextAudit) {
 function workspaceSaveState() {
   return isDirty(workspace) ? 'Unsaved changes' : 'All changes saved';
 }
-let view = new URLSearchParams(location.search).get('view') || 'overview';
+let view = new URLSearchParams(location.search).get('view') || 'mainOS';
 let locale = 'en';
 const app = document.querySelector('#app');
 
@@ -103,13 +106,28 @@ async function loadAudits() {
     const response = await fetch('/api/audits');
     if (!response.ok) throw new Error('Audit API unavailable');
     audits = await response.json();
+    dashboardDataAvailable = true;
+    await loadDashboardReadiness();
+    apiStatus = audits.length ? 'Persisted audit registry loaded.' : 'No persisted audits or drafts yet.';
     const requestedAudit = new URLSearchParams(location.search).get('audit');
-    if (audits.length) await selectAudit(audits.some(item => item.id === requestedAudit) ? requestedAudit : audits[0].id);
+    if (view === 'mainOS') render();
+    else if (audits.length) await selectAudit(audits.some(item => item.id === requestedAudit) ? requestedAudit : audits[0].id);
     else { apiStatus = 'No persisted audits yet — showing the local prototype example.'; render(); }
   } catch {
-    apiStatus = 'API unavailable — showing the local prototype example.';
+    dashboardDataAvailable = false;
+    apiStatus = 'Dashboard data unavailable. Retry to load persisted audits.';
     render();
   }
+}
+
+async function loadDashboardReadiness() {
+  const checks = await Promise.all(audits.map(async (item) => {
+    try {
+      const response = await fetch(`/api/audits/${encodeURIComponent(item.id)}/readiness`);
+      return response.ok ? [item.id, await response.json()] : [item.id, { state: 'unavailable' }];
+    } catch { return [item.id, { state: 'unavailable' }]; }
+  }));
+  dashboardReadiness = Object.fromEntries(checks);
 }
 
 async function checkPublicationReadiness(publish = false) {
@@ -181,6 +199,81 @@ function shell(content) {
   bind();
   bindAssessmentWorklist();
   bindFindingEditor();
+}
+
+const adminCopy = () => locale === 'ar' ? {
+  navigation:'تنقل الإدارة', system:'نظام تشغيل التدقيق', global:'الإدارة العامة', main:'النظام الرئيسي', clients:'تفاصيل العملاء', portfolio:'المحفظة', templates:'نظرة عامة للقوالب', workflow:'مسار التدقيق المحدد', locked:'مغلق', session:'جلسة الإدارة', logout:'تسجيل الخروج', dashboard:'لوحة الإدارة', operating:'نظام التشغيل الرئيسي · نظرة تشغيلية', start:'ابدأ من هنا (تدقيق جديد)', attention:'يتطلب انتباهاً', waiting:'بانتظار المراجعة', blocked:'عمل معطل', ready:'جاهز للتسليم', dispatch:'قائمة العمل ذات الأولوية', registry:'سجل التدقيقات والمسودات النشطة', auditId:'معرّف التدقيق', client:'العميل', project:'المشروع', url:'رابط الهدف', stage:'المرحلة', coverage:'التغطية', score:'حالة النتيجة', targetDate:'تاريخ الهدف', resolve:'معالجة', retry:'إعادة المحاولة', search:'بحث في مساحة العمل…', breadcrumb:'الإدارة / لوحة الإدارة', noBlockers:'لا توجد معوقات نشر محفوظة تحتاج إجراءً.', noAudits:'لا توجد تدقيقات أو مسودات محفوظة بعد.'
+} : {
+  navigation:'Admin navigation', system:'Audit operating system', global:'Global Administration', main:'Main OS', clients:'Client Details', portfolio:'Portfolio', templates:'Templates Overview', workflow:'Selected Audit Workflow', locked:'Locked', session:'Admin session', logout:'Log out', dashboard:'Admin Dashboard', operating:'Main Operating System · Operational overview', start:'Start Here (New Audit)', attention:'Needs Attention', waiting:'Waiting Review', blocked:'Blocked Work', ready:'Ready to Deliver', dispatch:'PRIORITY DISPATCH QUEUE', registry:'ACTIVE AUDIT / DRAFT REGISTRY', auditId:'Audit ID', client:'Client', project:'Project', url:'Target URL', stage:'Stage', coverage:'Coverage', score:'Score state', targetDate:'Target date', resolve:'Resolve', retry:'Retry', search:'Search workspace…', breadcrumb:'Admin / Dashboard', noBlockers:'No persisted publication blockers require action.', noAudits:'No persisted audits or drafts yet.'
+};
+
+const adminWorkflowLabels = () => locale === 'ar'
+  ? ['نظرة عامة على التدقيق', 'المرشحات', 'مراجعة المعايير', 'محرر الملاحظات', 'قائمة الملاحظات', 'النتيجة والأولوية']
+  : ['Audit Overview', 'Candidates', 'Criteria Review', 'Finding Editor', 'Finding Queue', 'Score Priority'];
+
+function adminSystemShell(content) {
+  const c = adminCopy();
+  app.className = locale === 'ar' ? 'rtl' : '';
+  app.dir = locale === 'ar' ? 'rtl' : 'ltr';
+  app.lang = locale === 'ar' ? 'ar' : 'en';
+  app.innerHTML = `<div class="admin-system"><aside class="admin-system-sidebar" aria-label="${c.navigation}"><a class="admin-system-brand" href="/workspace.html"><strong>UXM Admin</strong><span>${c.system}</span></a><section class="admin-system-nav-group"><p>${c.global}</p><button class="admin-system-nav is-current" type="button" data-view="mainOS" aria-current="page">${c.main}</button><a class="admin-system-nav" href="/operations.html">${c.clients}</a><a class="admin-system-nav" href="#active-audit-registry">${c.portfolio}</a><a class="admin-system-nav" href="/templates.html">${c.templates}</a></section><section class="admin-system-nav-group"><p>${c.workflow}</p>${adminWorkflowLabels().map((label) => `<span class="admin-system-nav is-locked" aria-disabled="true">${label}<small>${c.locked}</small></span>`).join('')}</section><footer class="admin-system-profile"><strong>${c.session}</strong><button type="button" data-action="logout">${c.logout}</button></footer></aside><main class="admin-system-main"><header class="admin-system-topbar"><p>${c.breadcrumb}</p><div><input aria-label="${c.search}" placeholder="${c.search}" disabled><button type="button" data-action="locale">${locale === 'en' ? 'العربية' : 'English'}</button></div></header>${content}</main></div>`;
+  bindAdminSystem();
+}
+
+function statusCard(label, value, tone) {
+  return `<section class="main-os-status"><div><h2>${label}</h2><strong class="main-os-status__value ${tone}">${value}</strong></div></section>`;
+}
+
+function dashboardText(value) {
+  if (locale !== 'ar') return value;
+  const translations = {
+    'Readiness review': 'مراجعة الجاهزية',
+    'Readiness unavailable': 'حالة الجاهزية غير متاحة',
+    'Ready to deliver': 'جاهز للتسليم',
+    'Assessment review': 'مراجعة التقييم',
+    'Evidence review': 'مراجعة الأدلة',
+    'Not scored': 'غير محسوب',
+    'Persisted audit registry loaded.': 'تم تحميل سجل التدقيقات المحفوظة.',
+  };
+  if (translations[value]) return translations[value];
+  const blockers = /^(\d+) publication blockers require resolution\.$/.exec(value);
+  return blockers ? `${blockers[1]} معوّق نشر يحتاج إلى معالجة.` : value;
+}
+
+function dashboardQueueAction(item) {
+  const c = adminCopy();
+  if (item.action === 'Retry') return `<button type="button" class="uxm-button uxm-button--secondary" data-action="retry-readiness">${c.retry}</button>`;
+  const counted = /^Resolve (\d+) blockers$/.exec(item.action);
+  const action = locale === 'ar' ? (counted ? `${c.resolve} ${counted[1]} معوّقاً` : item.action.replace(/^Resolve/, c.resolve)) : item.action;
+  return `<button type="button" class="uxm-button uxm-button--secondary" data-open-audit="${escapeHtml(item.auditId)}" data-next-view="readiness">${escapeHtml(action)}</button>`;
+}
+
+function mainOperatingSystem() {
+  const c = adminCopy();
+  if (!dashboardDataAvailable) {
+    adminSystemShell(`<section class="main-os main-os-unavailable" aria-labelledby="main-os-title"><h1 id="main-os-title">Dashboard data unavailable</h1><p>Persisted audits could not be loaded. No queue, registry, readiness, or score conclusion is shown until the data source responds.</p><button type="button" class="uxm-button uxm-button--primary" data-action="retry-dashboard">Retry dashboard</button><p class="main-os-note" aria-live="polite">${escapeHtml(dashboardText(apiStatus))}</p></section>`);
+    return;
+  }
+  const dashboard = buildAdminDashboard(audits, dashboardReadiness);
+  const queue = dashboard.queue.length ? dashboard.queue.map((item) => `<li><span class="main-os-dot ${item.tone}"></span><strong>${escapeHtml(dashboardText(item.title))}</strong><span>${escapeHtml(item.client)} · ${escapeHtml(item.project)}</span>${dashboardQueueAction(item)}</li>`).join('') : `<li class="main-os-empty">${c.noBlockers}</li>`;
+  const registry = dashboard.registry.length ? dashboard.registry.map((row) => `<tr><td><button type="button" class="main-os-record" data-open-audit="${escapeHtml(row.id)}" data-next-view="overview">${escapeHtml(row.id)}</button></td><td>${escapeHtml(row.client)}</td><td>${escapeHtml(row.project)}</td><td dir="ltr">${escapeHtml(row.url)}</td><td><span class="main-os-stage ${row.ready ? 'is-ready' : ''}">${escapeHtml(dashboardText(row.stage))}</span></td><td dir="ltr">${escapeHtml(row.coverage)}</td><td>${escapeHtml(dashboardText(row.score))}</td><td dir="ltr">${escapeHtml(row.targetDate)}</td></tr>`).join('') : `<tr><td colspan="8" class="main-os-empty">${c.noAudits}</td></tr>`;
+  adminSystemShell(`<section class="main-os" aria-labelledby="main-os-title"><header class="main-os-header"><div><h1 id="main-os-title">${c.dashboard}</h1><p>${c.operating}</p></div><button type="button" class="uxm-button uxm-button--primary" data-action="start-here" disabled aria-disabled="true" title="URL-first setup begins in Slice 4.11">${c.start}</button></header><div class="main-os-status-grid">${statusCard(c.attention, dashboard.summary.needsAttention, 'is-critical')}${statusCard(c.waiting, dashboard.summary.waitingReview, 'is-pending')}${statusCard(c.blocked, dashboard.summary.readinessUnavailable ? 'Unknown' : dashboard.summary.blocked, 'is-blocked')}${statusCard(c.ready, dashboard.summary.ready, 'is-ready')}</div><section class="main-os-section" aria-labelledby="dispatch-title"><h2 id="dispatch-title">${c.dispatch}</h2><ul class="main-os-queue">${queue}</ul></section><section class="main-os-section" id="active-audit-registry" aria-labelledby="registry-title"><h2 id="registry-title">${c.registry}</h2><div class="main-os-registry"><table><thead><tr><th>${c.auditId}</th><th>${c.client}</th><th>${c.project}</th><th>${c.url}</th><th>${c.stage}</th><th>${c.coverage}</th><th>${c.score}</th><th>${c.targetDate}</th></tr></thead><tbody>${registry}</tbody></table></div></section><p class="main-os-note" aria-live="polite">${escapeHtml(dashboardText(apiStatus))}</p></section>`);
+}
+
+async function openAuditFromDashboard(id, nextView) {
+  await selectAudit(id, { discard: true });
+  view = nextView;
+  render();
+}
+
+function bindAdminSystem() {
+  document.querySelectorAll('[data-view]').forEach((element) => element.addEventListener('click', () => { view = element.dataset.view; render(); }));
+  document.querySelectorAll('[data-open-audit]').forEach((element) => element.addEventListener('click', () => openAuditFromDashboard(element.dataset.openAudit, element.dataset.nextView || 'overview')));
+  document.querySelector('[data-action="logout"]')?.addEventListener('click', logout);
+  document.querySelector('[data-action="locale"]')?.addEventListener('click', () => { locale = locale === 'en' ? 'ar' : 'en'; render(); });
+  document.querySelector('[data-action="retry-dashboard"]')?.addEventListener('click', loadAudits);
+  document.querySelector('[data-action="retry-readiness"]')?.addEventListener('click', async () => { await loadDashboardReadiness(); render(); });
+  document.querySelector('[data-action="start-here"]')?.addEventListener('click', () => { apiStatus = 'URL-first setup begins in Slice 4.11.'; render(); });
 }
 
 function overview() {
@@ -356,7 +449,7 @@ function bindFindingEditor() {
 
 function scope() {
   const scopeItems = scopeIncludedItems(audit);
-  shell(`<section class="scope-view" aria-labelledby="scope-title"><p class="operator-overview__eyebrow">Scope & pages</p><h1 id="scope-title">Review the persisted audit boundary</h1><p class="operator-overview__intro">This read-only view displays the persisted review boundary: its starting URL, scope summary, and included pages. It does not confirm or edit pages or journeys, create findings, or change the score.</p><div class="operator-overview__grid"><section class="operator-overview__panel"><h2>Current audit boundary</h2><div class="row"><span>Starting URL</span><b dir="ltr">${escapeHtml(audit.url)}</b></div><div class="row"><span>Scope summary</span><b>${escapeHtml(scopeSummary(audit))}</b></div><div class="row"><span>Pages in persisted audit</span><b>${scopeItems.length}</b></div><button class="uxm-button uxm-button--secondary" data-view="criteria">Review scoped criteria</button></section><section class="operator-overview__panel"><h2>Included pages and scope items</h2>${scopeItems.length ? scopeItems.map((item) => `<div class="row"><span>${escapeHtml(item.label)}</span>${item.reference ? `<b dir="ltr">${escapeHtml(item.reference)}</b>` : ''}</div>`).join('') : '<p class="muted">No included pages or scope items are persisted for this audit.</p>'}</section><section class="operator-overview__panel"><h2>Next: safe discovery</h2><p>Use First Pass to propose public pages and candidate observations. It remains separate from persisted assessment work.</p><button class="uxm-button uxm-button--primary" data-view="firstPass">Open First Pass</button></section></div></section>`);
+  shell(`<section class="scope-view" aria-labelledby="scope-title"><p class="operator-overview__eyebrow">Scope & pages</p><h1 id="scope-title">Review the persisted audit boundary</h1><p class="operator-overview__intro">This read-only view displays the persisted review boundary: its starting URL, scope summary, and included pages. It does not confirm or edit pages or journeys, create findings, or change the score.</p><div class="operator-overview__grid"><section class="operator-overview__panel"><h2>Current audit boundary</h2><div class="row"><span>Starting URL</span><b dir="ltr">${escapeHtml(audit.url)}</b></div><div class="row"><span>Scope summary</span><b>${escapeHtml(scopeSummary(audit))}</b></div><div class="row"><span>Included scope items</span><b>${scopeItems.length}</b></div><button class="uxm-button uxm-button--secondary" data-view="criteria">Review scoped criteria</button></section><section class="operator-overview__panel"><h2>Included pages and scope items</h2>${scopeItems.length ? scopeItems.map((item) => `<div class="row"><span>${escapeHtml(item.label)}</span>${item.reference ? `<b dir="ltr">${escapeHtml(item.reference)}</b>` : ''}</div>`).join('') : '<p class="muted">No included pages or scope items are persisted for this audit.</p>'}</section><section class="operator-overview__panel"><h2>Next: safe discovery</h2><p>Use First Pass to propose public pages and candidate observations. It remains separate from persisted assessment work.</p><button class="uxm-button uxm-button--primary" data-view="firstPass">Open First Pass</button></section></div></section>`);
 }
 function firstPass() {
   shell(`<section class="first-pass-view" aria-labelledby="first-pass-title"><p class="operator-overview__eyebrow">Candidate-only discovery</p><h1 id="first-pass-title">Run a safe candidate-only discovery</h1><p class="operator-overview__intro">Public pages only. This creates transient candidates for human review; it never changes assessment, findings, readiness, or score.</p><section class="operator-overview__panel"><form id="first-pass-form" class="form"><label class="form-field full">Website URL<input required name="firstPassUrl" type="url" value="${escapeHtml(aiFirstPassState.url || audit.url)}"></label><button class="uxm-button uxm-button--secondary full" type="button" data-action="detect-product-type">Detect product type</button><p class="ai-status full" aria-live="polite">${escapeHtml(aiFirstPassState.productTypeMessage || 'Choose a product type and scope bundle.')}</p><label class="form-field">Product type<select required class="form-select" name="productType"><option value="">Choose product type</option>${[['government_civic','Government / civic service'],['ecommerce','E-commerce'],['saas_digital_product','SaaS / digital product'],['corporate_marketing','Corporate / marketing website'],['content_publisher','Content / publisher'],['custom','Custom']].map(([value,label]) => `<option value="${value}" ${value === aiFirstPassState.productType ? 'selected' : ''}>${label}</option>`).join('')}</select></label><label class="form-field">Scope bundle<select required class="form-select" name="bundle" ${aiFirstPassState.productType ? '' : 'disabled'}><option value="">Choose scope bundle</option>${[['full_website','Full website'],['selected_pages','Selected pages'],['general_health_check','General health check'],['contact_experience','Contact experience']].map(([value,label]) => `<option value="${value}" ${value === aiFirstPassState.bundle ? 'selected' : ''}>${label}</option>`).join('')}</select></label><label class="form-field full">Selected pages (one per line)<textarea name="selectedPages">${escapeHtml(aiFirstPassState.selectedPages)}</textarea></label><button class="uxm-button uxm-button--primary full" type="submit">Run preliminary first pass</button></form></section>${aiFirstPassState.candidates.length ? `<div class="candidate-list">${aiFirstPassState.candidates.map(candidateCard).join('')}</div>` : ''}</section>`);
@@ -376,6 +469,6 @@ function bindAssessmentWorklist() {
     render();
   });
 }
-function render(){({overview,scope,firstPass,criteria,findings:findingEditor,scorecard,readiness,report})[view]();}
+function render(){({mainOS:mainOperatingSystem,overview,scope,firstPass,criteria,findings:findingEditor,scorecard,readiness,report})[view]();}
 function bind(){document.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>{view=el.dataset.view;render()});document.querySelector('[data-action="logout"]')?.addEventListener('click',logout);document.querySelector('#first-pass-form')?.addEventListener('submit',(event)=>{event.preventDefault();requestAiFirstPass(event.currentTarget)});document.querySelector('[data-action="detect-product-type"]')?.addEventListener('click',()=>requestProductTypeDetection(document.querySelector('#first-pass-form')));document.querySelector('[name="productType"]')?.addEventListener('change',(event)=>{const form=document.querySelector('#first-pass-form');aiFirstPassState={...aiFirstPassState,url:form.elements.firstPassUrl.value,productType:event.target.value,bundle:'',productTypeMessage:event.target.value?'Product type selected manually. Now choose a bundle.':'Detect the product type, or choose it manually.'};render()});document.querySelectorAll('[data-action="promote-candidate"]').forEach(el=>el.addEventListener('click',()=>{const candidate=aiFirstPassState.candidates[Number(el.dataset.candidate)];aiDraftState={candidateId:candidate.id,context:{criterionId:candidate.checkpointId,category:'navigation',journey:'Discover',page:'Public page',title:candidate.title,notes:candidate.reasons.join('\n'),alt:'Validate and attach evidence before applying.',capturedAt:'',sourceReference:candidate.evidenceRefs.join(', ')},draft:{observation:candidate.observation,impact:candidate.impact,recommendation:candidate.recommendation,suggestedSeverity:candidate.suggestedSeverity,confidence:candidate.confidence,missingEvidenceChecks:candidate.evidenceGaps,duplicateRisk:{level:'unknown',matches:[]}},message:'Candidate promoted for review only. Validate and attach evidence before applying.'};render()}));document.querySelectorAll('[data-action="reject-candidate"]').forEach(el=>el.addEventListener('click',()=>{aiFirstPassState.candidates.splice(Number(el.dataset.candidate),1);aiFirstPassState={...aiFirstPassState,message:'Candidate rejected. No audit data changed.'};render()}));document.querySelector('[data-action="draft-ai"]')?.addEventListener('click',()=>requestAiDraft(document.querySelector('#finding-copilot-form')));document.querySelector('[data-action="apply-ai-draft"]')?.addEventListener('click',()=>{const form=document.querySelector('#finding-copilot-form');const context=aiContextFromForm(form);const reviewed={...aiDraftState.draft,observation:new FormData(form).get('draftObservation'),impact:new FormData(form).get('draftImpact'),recommendation:new FormData(form).get('draftRecommendation'),suggestedSeverity:new FormData(form).get('draftSeverity')};pendingFindingDraft = buildAiReviewedFindingDraft(context, reviewed);findingEditorSelection=NEW_FINDING_DRAFT;view='findings';aiFirstPassState=removeReviewedCandidate(aiFirstPassState,aiDraftState.candidateId);aiDraftState={context:null,draft:null,message:'Reviewed draft is ready for the operator editor. Save draft to persist it.'};publicationReadiness=null;render()});document.querySelector('[data-action="locale"]')?.addEventListener('click',()=>{locale=locale==='en'?'ar':'en';publicationReadiness=null;render()});document.querySelector('[data-action="export-pdf"]')?.addEventListener('click',exportPdf);document.querySelector('[data-action="readiness"]')?.addEventListener('click',()=>checkPublicationReadiness());document.querySelector('[data-action="save"]')?.addEventListener('click',saveChanges);document.querySelector('[data-action="discard"]')?.addEventListener('click',discardAndReload);document.querySelector('[data-audit]')?.addEventListener('change',(event)=>selectAudit(event.target.value));document.querySelectorAll('[data-evidence-upload]').forEach(el=>el.addEventListener('change',()=>{const file=el.files?.[0];const status=document.querySelector(`[data-evidence-file-status="${el.dataset.evidenceKind}"]`);if(file && status) status.textContent=`${file.name} selected — uploading…`;uploadEvidence(el)}));document.querySelector('#finding-form')?.addEventListener('submit',(e)=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));replaceAudit(createFinding(audit,{criterionId:'NAV-02',category:'information_architecture',...d,url:audit.url,evidence:{alt:d.alt,status:'pending'}}));publicationReadiness=null;render()});}
 loadAudits();

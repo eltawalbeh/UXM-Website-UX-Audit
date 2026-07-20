@@ -20,7 +20,7 @@ test('scope, first pass, and readiness have separate work-purpose renderers and 
 
   for (const view of ['scope', 'firstPass', 'readiness']) {
     assert.match(app, new RegExp(`function ${view}\\(\\)`));
-    assert.match(app, /\(\{overview,scope,firstPass,criteria,findings:findingEditor,scorecard,readiness,report\}\)/);
+    assert.match(app, /\(\{mainOS:mainOperatingSystem,overview,scope,firstPass,criteria,findings:findingEditor,scorecard,readiness,report\}\)/);
   }
   assert.doesNotMatch(app, /scope:findingsWorkbench,firstPass:findingsWorkbench/);
   assert.match(app, /Review the persisted audit boundary/);
@@ -35,7 +35,7 @@ test('scope surface renders every persisted included item and its truthful count
   const app = await read('../app.js');
 
   assert.match(app, /const scopeItems = scopeIncludedItems\(audit\);/);
-  assert.match(app, /Pages in persisted audit<\/span><b>\$\{scopeItems\.length\}<\/b>/);
+  assert.match(app, /Included scope items<\/span><b>\$\{scopeItems\.length\}<\/b>/);
   assert.match(app, /<h2>Included pages and scope items<\/h2>/);
   assert.match(app, /scopeItems\.map\(\(item\) =>/);
   assert.match(app, /item\.reference/);
@@ -62,7 +62,8 @@ test('criteria creates a new linked finding at the selected checkpoint without c
 test('operator navigation uses truthful operations and audit-template labels', async () => {
   const app = await read('../app.js');
 
-  assert.doesNotMatch(app, /portfolio:'Portfolio'/);
+  assert.match(app, /portfolio:'Portfolio'/);
+  assert.match(app, /href="#active-audit-registry">\$\{c\.portfolio\}<\/a>/);
   assert.match(app, /operations:'Operations'/);
   assert.match(app, /templates:'Audit templates'/);
   assert.match(app, /href="\/operations\.html"[^>]*>\$\{copy\.operations\}/);
